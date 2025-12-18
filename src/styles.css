@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+@plugin 'tailwind-scrollbar';
+
+@variant dark (&:where(.dark, .dark *));
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

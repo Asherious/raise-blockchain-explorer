@@ -1,0 +1,105 @@
+<div *ngIf="block; else notFound" class="mx-12 grid grid-cols-2 gap-12">
+  <!-- Block Info -->
+  <div
+    class="bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+  >
+    <div class="relative px-6 pt-6 flex">
+      <div class="flex-row">
+        <div
+          class="h-[100px] w-[100px] transition-transform duration-200 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+        ></div>
+        <p class="py-1 text-[32px] text-center font-medium dark:text-[#7F8493]">
+          Block {{ block.blockId }}
+        </p>
+      </div>
+    </div>
+    <!-- Block Details -->
+    <div
+      class="m-3 p-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+    >
+      <p class="mb-3 text-[16px] font-medium">Details</p>
+      <p>
+        Channel: <span class="text-gray-500">{{ block.channelName }}</span>
+      </p>
+      <p>
+        Txs: <span class="text-gray-500">{{ block.tx }}</span>
+      </p>
+      <p>
+        Data Hash: <span class="text-gray-500">{{ block.dataHash | truncateHash }}</span>
+      </p>
+      <p>
+        Block Hash: <span class="text-gray-500">{{ block.blockHash | truncateHash }}</span>
+      </p>
+      <p>
+        Previous Hash: <span class="text-gray-500">{{ block.previousHash | truncateHash }}</span>
+      </p>
+      <p>
+        Size: <span class="text-gray-500">{{ block.size }} kB</span>
+      </p>
+    </div>
+  </div>
+  <!-- Transactions -->
+  <div
+    class="bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+  >
+    <div class="p-3">
+      <p class="mb-3 text-center text-[16px] font-medium dark:text-[#7F8493]">Transactions</p>
+      <div class="space-y-3">
+        <!-- Transaction IDs -->
+        <ng-container *ngIf="isArray(block.txId); else singleId">
+          <div
+            *ngFor="let id of block.txId"
+            class="bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+          >
+            <div class="flex justify-between p-4">
+              <span
+                >TX<span class="ml-4 text-gray-500">{{ id | truncateHash }}</span></span
+              >
+              <!-- Expand/Collapse Button -->
+              <button (click)="open = !open" class="cursor-pointer">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="size-6 transition-transform duration-300 ease-in-out"
+                  [class.rotate-180]="open"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            <!-- TX Details -->
+            <div
+              class="grid transition-all duration-300 ease-in-out"
+              [class.grid-rows-[1fr]]="open"
+              [class.grid-rows-[0fr]]="!open"
+            >
+              <div class="overflow-hidden">
+                <p class="p-4">TX Details</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <!-- Transaction ID for single transaction -->
+        <ng-template #singleId>
+          <div
+            class="p-4 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+          >
+            <span class="mr-2">TX</span> <span class="text-gray-500">{{ block.txId }}</span>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Block Not Found -->
+<ng-template #notFound>
+  <div class="p-20 text-center text-[#7F8493] font-medium">
+    <p class="text-2xl">Block not found</p>
+    <p class="text-sm">Try searching for a different ID</p>
+  </div>
+</ng-template>

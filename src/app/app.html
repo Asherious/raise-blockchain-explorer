@@ -1,0 +1,136 @@
+<div class="flex bg-[#e0e4e7] dark:bg-[#24272C] h-screen" style="font-family: Poppins, sans-serif">
+  <!-- Sidebar -->
+  <div
+    class="flex-col flex w-[248px] h-full z-20 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)]"
+  >
+    <div class="m-8 font-medium text-black dark:text-[#7F8493]">
+      <div class="w-[186px] text-[32px] tracking-[0.2em]">
+        <span class="inline-block" style="text-shadow: 0 4px 6px rgba(0, 0, 0, 0.4)"> RAISE </span>
+      </div>
+      <div
+        class="w-[186px] text-[15px] tracking-wide -mt-2.5 mb-5 text-shadow-explorer-effect"
+        style="text-shadow: 0 4px 6px rgba(0, 0, 0, 0.4)"
+      >
+        BLOCKCHAIN EXPLORER
+      </div>
+      <ul class="w-[186px] text-[20px] space-y-5">
+        <li>
+          <a
+            routerLink=""
+            routerLinkActive="bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="flex items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px] w-[186px] h-[38px]"
+          >
+            <button class="cursor-pointer ms-4">DASHBOARD</button>
+          </a>
+        </li>
+        <!--<li>
+          <a
+            routerLink="network"
+            routerLinkActive="bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+            class="flex items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px] w-[186px] h-[38px]"
+          >
+            <button class="cursor-pointer ms-4">NETWORK</button>
+          </a>
+        </li>-->
+        <li>
+          <a
+            routerLink="blocks"
+            routerLinkActive="bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+            class="flex items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px] w-[186px] h-[38px]"
+          >
+            <button class="cursor-pointer ms-4">BLOCKS</button>
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="chaincodes"
+            routerLinkActive="bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+            class="flex items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px] w-[186px] h-[38px]"
+          >
+            <button class="cursor-pointer ms-4">CHAINCODES</button>
+          </a>
+        </li>
+        <!--<li>
+          <a
+            routerLink="channels"
+            routerLinkActive="bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+            class="flex items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px] w-[186px] h-[38px]"
+          >
+            <button class="cursor-pointer ms-4">CHANNELS</button>
+          </a>
+        </li>-->
+      </ul>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto scrollbar-hide dark:text-[#7F8493]">
+    <!-- Searchbar/Switch -->
+    <div class="flex items-center py-12 pr-12 pl-[436px] sticky">
+      <div class="flex items-center justify-between w-full max-w mx-auto">
+        <form
+          (submit)="onSearch(searchInput.value); $event.preventDefault()"
+          class="flex items-center w-[800px] h-[46px] px-3 rounded-[25px] bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+        >
+          <button type="submit" class="cursor-pointer text-black dark:text-[#7F8493] me-3">
+            <svg
+              class="w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              fill="currentColor"
+            >
+              <path
+                d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+              />
+            </svg>
+          </button>
+          <input
+            #searchInput
+            type="text"
+            placeholder="Search Blocks and Transactions"
+            class="w-full h-full bg-transparent placeholder-[#7F8493] dark:placeholder-gray-600 font-lighttext-[20px] focus:outline-none tracking-tight"
+          />
+        </form>
+        <!-- Theme Switch -->
+        <button
+          (click)="toggle()"
+          class="cursor-pointer w-[92px] h-[46px] rounded-full pr-[46px] bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+        >
+          <div
+            class="transition-transform duration-300 ease-in-out w-[46px] h-[46px] rounded-full flex items-center justify-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)]"
+            [style.transform]="darkMode() ? 'translateX(46px)' : 'translateX(0)'"
+          >
+            <div *ngIf="!darkMode()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-6"
+              >
+                <path
+                  d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z"
+                />
+              </svg>
+            </div>
+            <div *ngIf="darkMode()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-6"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+    <main>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

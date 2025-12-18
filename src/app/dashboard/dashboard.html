@@ -1,0 +1,123 @@
+<div class="mx-12 mb-12">
+  <!-- Counter -->
+  <div
+    class="grid grid-cols-4 gap-6 mb-12 max-w bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+  >
+    <div class="p-[31px] flex flex-col items-center justify-center">
+      <div
+        class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <span class="font-medium text-[24px]">3</span>
+      </div>
+      <p class="text-[16px] font-medium">BLOCKS</p>
+    </div>
+    <div class="p-[31px] flex flex-col items-center justify-center">
+      <div
+        class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <span class="font-medium text-[24px]">3</span>
+      </div>
+      <p class="text-[16px] font-medium">TRANSACTIONS</p>
+    </div>
+    <div class="p-[31px] flex flex-col items-center justify-center">
+      <div
+        class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <span class="font-medium text-[24px]">2</span>
+      </div>
+      <p class="text-[16px] font-medium">NODES</p>
+    </div>
+    <div class="p-[31px] flex flex-col items-center justify-center">
+      <div
+        class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <span class="font-medium text-[24px]">0</span>
+      </div>
+      <p class="text-[16px] font-medium">CHAINCODES</p>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 gap-12 text-[16px]">
+    <div class="space-y-12">
+      <!-- Peers -->
+      <div
+        class="px-1 pt-3 pb-1 h-[310px] space-y-3 text-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <div class="grid grid-cols-2 mb-1 font-medium">
+          <span>Peer</span>
+          <span>Status</span>
+        </div>
+        <div
+          class="overscroll-none overflow-y-auto scrollbar-hide h-[265px] p-2 space-y-3 rounded-[10px]"
+        >
+          <div *ngFor="let peer of peerList">
+            <div
+              class="py-[26px] grid grid-cols-2 place-items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+            >
+              <span>{{ peer.peerName }}</span>
+              <span
+                class="w-4 h-4 rounded-full"
+                [ngClass]="{
+                  'bg-[#65ae61]': peer.status,
+                  'bg-red-500': !peer.status,
+                }"
+              ></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Latest Blocks -->
+      <div
+        class="px-1 pt-3 pb-1 h-[310px] space-y-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <div class="mb-1 font-medium text-center">
+          <span>Latest Blocks</span>
+        </div>
+        <div
+          class="overscroll-none overflow-y-auto scrollbar-hide h-[265px] p-2 space-y-3 rounded-[10px]"
+        >
+          <div *ngFor="let block of blockList">
+            <a [routerLink]="['/block-details', block.blockId]" class="block w-full">
+              <button
+                class="cursor-pointer p-[3.5px] w-full flex bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+              >
+                <div
+                  class="p-[34.5px] bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+                ></div>
+                <div class="px-[7px] text-left">
+                  <p class="text-[14px] font-medium dark:text-[#7F8493]">
+                    Block {{ block.blockId }}
+                  </p>
+                  <p class="text-xs text-gray-500">Channel: {{ block.channelName }}</p>
+                  <p class="text-xs text-gray-500">Data Hash: {{ block.dataHash }}</p>
+                  <p class="text-xs text-gray-500">
+                    {{ block.tx }} Txs, {{ block.timestamp | date: "d MMM yyyy, HH:mm:ss 'GMT'Z" }}
+                  </p>
+                </div>
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-12 text-[16px]">
+      <div
+        class="p-3 h-[310px] space-y-4 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <div class="mb-3 font-medium text-center">Blocks in the last 24 hours</div>
+
+        <div class="relative w-full h-[calc(100%-48px)] rounded-2xl">
+          <canvas id="blockChart" #blockChartCanvas class="h-full"></canvas>
+        </div>
+      </div>
+
+      <div
+        class="p-3 h-[310px] space-y-4 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      >
+        <div class="mb-3 font-medium text-center">Transactions in the last 24 hours</div>
+        <div class="relative w-full h-[calc(100%-48px)] rounded-2xl overflow-hidden">
+          <canvas id="txChart" #txChartCanvas class="h-full"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
