@@ -24,6 +24,11 @@ export const routes: Routes = [
     title: 'Raise Blockchain Explorer - BLOCKS',
   },
   {
+    path: 'blocks/:blockId',
+    component: BlockDetails,
+    title: 'Raise Blockchain Explorer - BLOCK DETAILS',
+  },
+  {
     path: 'chaincodes',
     component: CHAINCODES,
     title: 'Raise Blockchain Explorer - CHAINCODES',
@@ -32,11 +37,6 @@ export const routes: Routes = [
     path: 'channels',
     component: CHANNELS,
     title: 'Raise Blockchain Explorer - CHANNELS',
-  },
-  {
-    path: 'block-details/:blockId',
-    component: BlockDetails,
-    title: 'Raise Blockchain Explorer - BLOCK DETAILS',
   },
   {
     path: '**',

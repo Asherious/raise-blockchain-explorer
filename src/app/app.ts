@@ -17,7 +17,7 @@ export class App {
   onSearch(val: string) {
     const id = val.trim();
     if (id) {
-      this.router.navigate(['block-details', id]);
+      this.router.navigate(['blocks', id]);
     }
   }
   // Dark Mode Toggle
