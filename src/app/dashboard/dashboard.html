@@ -76,7 +76,7 @@
           class="overscroll-none overflow-y-auto scrollbar-hide h-[265px] p-2 space-y-3 rounded-[10px]"
         >
           <div *ngFor="let block of blockList">
-            <a [routerLink]="['/blocks', block.blockId]" class="block w-full">
+            <a [routerLink]="['/blocks', block.number]" class="block w-full">
               <button
                 class="cursor-pointer p-[3.5px] w-full flex bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
               >
@@ -85,12 +85,13 @@
                 ></div>
                 <div class="px-[7px] text-left">
                   <p class="text-[14px] font-medium dark:text-[#7F8493]">
-                    Block {{ block.blockId }}
+                    Block {{ block.number }}
                   </p>
-                  <p class="text-xs text-gray-500">Channel: {{ block.channelName }}</p>
+                  <!--<p class="text-xs text-gray-500">Channel: {{ block.channelName }}</p>-->
                   <p class="text-xs text-gray-500">Data Hash: {{ block.dataHash }}</p>
+                  <p class="text-xs text-gray-500">{{ block.txCount }} Txs</p>
                   <p class="text-xs text-gray-500">
-                    {{ block.tx }} Txs, {{ block.timestamp | date: "d MMM yyyy, HH:mm:ss 'GMT'Z" }}
+                    {{ block.timestamp | date: "d MMM yyyy, HH:mm:ss 'GMT'Z" }}
                   </p>
                 </div>
               </button>

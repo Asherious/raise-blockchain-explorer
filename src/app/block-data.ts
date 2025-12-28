@@ -1,11 +1,11 @@
 export interface BlockData {
-  blockId: number;
-  channelName: string;
-  tx: number;
-  dataHash: string;
-  blockHash: string;
+  number: string;
+  channelName?: string;
   previousHash: string;
-  txId: string[];
+  dataHash: string;
+  blockHash?: string;
+  txCount: number;
+  txIds: string[];
   size: number;
   timestamp: string;
 }
