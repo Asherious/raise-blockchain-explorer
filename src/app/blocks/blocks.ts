@@ -60,14 +60,11 @@ export class BLOCKS implements OnInit, AfterViewInit {
     this.blockService.getAllBlocks().subscribe({
       next: (data) => {
         this.blockList = data;
+        // Sorting blocks
+        this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
         this.openTx = data.map(() => false); // initialize TX expand state
         this.calculatePaginationDetails();
         this.updatePaginatedList();
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching block data:', err);
-        this.error = 'Failed to load blocks';
         this.loading = false;
       },
     });

@@ -7,7 +7,7 @@
       <div
         class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
       >
-        <span class="font-medium text-[24px]">3</span>
+        <span class="font-medium text-[24px]">{{ blockList.length }}</span>
       </div>
       <p class="text-[16px] font-medium">BLOCKS</p>
     </div>
@@ -15,7 +15,7 @@
       <div
         class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
       >
-        <span class="font-medium text-[24px]">3</span>
+        <span class="font-medium text-[24px]">{{ totalTransactions }}</span>
       </div>
       <p class="text-[16px] font-medium">TRANSACTIONS</p>
     </div>
@@ -23,7 +23,7 @@
       <div
         class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
       >
-        <span class="font-medium text-[24px]">2</span>
+        <span class="font-medium text-[24px]">{{ nodeList.length }}</span>
       </div>
       <p class="text-[16px] font-medium">NODES</p>
     </div>
@@ -31,7 +31,7 @@
       <div
         class="w-20 h-20 flex items-center justify-center mb-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
       >
-        <span class="font-medium text-[24px]">0</span>
+        <span class="font-medium text-[24px]">{{ chaincodeList.length }}</span>
       </div>
       <p class="text-[16px] font-medium">CHAINCODES</p>
     </div>
@@ -49,16 +49,16 @@
         <div
           class="overscroll-none overflow-y-auto scrollbar-hide h-[265px] p-2 space-y-3 rounded-[10px]"
         >
-          <div *ngFor="let peer of peerList">
+          <div *ngFor="let node of nodeList">
             <div
               class="py-[26px] grid grid-cols-2 place-items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
             >
-              <span>{{ peer.peerName }}</span>
+              <span>{{ node.name }}:{{ node.port }}</span>
               <span
                 class="w-4 h-4 rounded-full"
                 [ngClass]="{
-                  'bg-[#65ae61]': peer.status,
-                  'bg-red-500': !peer.status,
+                  'bg-[#65ae61]': node.status === 'UP',
+                  'bg-red-500': node.status === 'DOWN',
                 }"
               ></span>
             </div>

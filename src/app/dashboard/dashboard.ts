@@ -9,7 +9,7 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { PeerData } from '../peer-data';
+import { NodeData } from '../node-data';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BlockData } from '../block-data';
@@ -55,9 +55,15 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   // Inject HttpClient for API calls
   private http: HttpClient = inject(HttpClient);
 
-  loading = true;
   error: string | null = null;
+  // Mock node Data
+  nodeList: NodeData[] = [];
   blockList: BlockData[] = [];
+  chaincodeList: any[] = [];
+
+  get totalTransactions(): number {
+    return this.blockList.reduce((sum, block) => sum + block.txCount, 0);
+  }
 
   // ViewChild references for the chart canvases
   @ViewChild('blockChartCanvas') blockChartRef!: ElementRef<HTMLCanvasElement>;
@@ -66,21 +72,34 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.fetchBlockData();
+      this.fetchNodeData();
+      this.fetchChaincodeData();
     }
   }
   // Fetch block data from API
   fetchBlockData() {
-    this.loading = true;
     this.http.get<BlockData[]>('http://localhost:3000/blocks').subscribe({
       next: (data) => {
         this.blockList = data;
+        // Sorting blocks
         this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
-        this.loading = false;
-        this.initChartsAfterData(); // safe: only runs in browser
+        this.initChartsAfterData();
       },
-      error: (err) => {
-        console.error('Error fetching blocks:', err);
-        this.loading = false;
+    });
+  }
+  //Fetch node data from API
+  fetchNodeData() {
+    this.http.get<NodeData[]>('http://localhost:3000/nodes').subscribe({
+      next: (data) => {
+        this.nodeList = data;
+      },
+    });
+  }
+  //Fetch chaincode data from API
+  fetchChaincodeData() {
+    this.http.get<any[]>('http://localhost:3000/chaincodes').subscribe({
+      next: (data) => {
+        this.chaincodeList = data;
       },
     });
   }
@@ -130,7 +149,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             data: aggregatedData,
             borderColor: '#396dbb',
             backgroundColor: gradientblockFill,
-            tension: 0,
+            tension: 0.2,
             borderWidth: 3,
             pointRadius: 0,
             pointHitRadius: 10,
@@ -218,7 +237,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             data: aggregatedData,
             borderColor: '#65ae61',
             backgroundColor: gradienttxFill,
-            tension: 0,
+            tension: 0.2,
             borderWidth: 3,
             pointRadius: 0,
             pointHitRadius: 10,
@@ -350,27 +369,4 @@ export class DASHBOARD implements OnInit, AfterViewInit {
         return { x: new Date(hourBin.latestTs), y: hourBin.txCount };
       });
   }
-  // Mock Peer Data
-  peerList: PeerData[] = [
-    {
-      peerName: 'peer0.org1.example.com:7051',
-      status: true,
-    },
-    {
-      peerName: 'peer0.org2.example.com:9051',
-      status: true,
-    },
-    {
-      peerName: 'orderer.example.com:7050',
-      status: true,
-    },
-    {
-      peerName: 'orderer.example.com:7050',
-      status: true,
-    },
-    {
-      peerName: 'orderer.example.com:7050',
-      status: true,
-    },
-  ];
 }

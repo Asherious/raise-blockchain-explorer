@@ -5,10 +5,10 @@
     class="cursor-pointer active:cursor-pointer! relative py-4 flex w-full overflow-x-auto scrollbar-hide"
     (mousedown)="onMouseDown($event)"
   >
+    <div
+      class="z-10 absolute w-full min-w-full top-[49px] h-2 bg-[#e0e4e7] shadow-[inset_0px_3px_6px_#c8c8c8,inset_0px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_0px_3px_6px_rgba(0,0,0,0.3),inset_0px_-3px_6px_rgba(255,255,255,0.08)]"
+    ></div>
     <div *ngFor="let block of blockList" class="relative z-10">
-      <div
-        class="-z-10 absolute w-full min-w-full top-[35px] h-2 bg-[#e0e4e7] shadow-[inset_0px_3px_6px_#c8c8c8,inset_0px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_0px_3px_6px_rgba(0,0,0,0.3),inset_0px_-3px_6px_rgba(255,255,255,0.08)]"
-      ></div>
       <a [routerLink]="['/blocks', block.number]">
         <div class="px-3 flex-row">
           <button
