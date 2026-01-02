@@ -88,11 +88,9 @@
                     Block {{ block.number }}
                   </p>
                   <!--<p class="text-xs text-gray-500">Channel: {{ block.channelName }}</p>-->
-                  <p class="text-xs text-gray-500">Data Hash: {{ block.dataHash }}</p>
+                  <p class="text-xs text-gray-500">Data Hash:{{ block.dataHash | truncateHash }}</p>
                   <p class="text-xs text-gray-500">{{ block.txCount }} Txs</p>
-                  <p class="text-xs text-gray-500">
-                    {{ block.timestamp | date: "d MMM yyyy, HH:mm:ss 'GMT'Z" }}
-                  </p>
+                  <p class="text-xs text-gray-500">{{ block.timestamp | formatDate }}</p>
                 </div>
               </button>
             </a>

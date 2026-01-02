@@ -135,6 +135,10 @@ export class BLOCKS implements OnInit, AfterViewInit {
     this.goToPage(this.currentPage - 1);
   }
 
+  copy(value: string) {
+    navigator.clipboard.writeText(value);
+  }
+
   // Mock Block Data
   blockList: BlockData[] = [];
 }

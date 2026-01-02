@@ -38,6 +38,12 @@ export class BlockService {
   getBlockByNumber(blockNumber: string): Observable<any> {
     return this.http
       .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })
-      .pipe(map((blocks: any[]) => blocks.find((b) => b.number === blockNumber)));
+      .pipe(map((blocks: any[]) => blocks.find((block) => block.number === blockNumber)));
+  }
+
+  getBlockByDataHash(dataHash: string): Observable<any> {
+    return this.http
+      .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })
+      .pipe(map((blocks: any[]) => blocks.find((block) => block.dataHash === dataHash)));
   }
 }

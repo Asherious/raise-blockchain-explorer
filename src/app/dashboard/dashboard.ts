@@ -12,6 +12,8 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { TruncateHashPipe } from '../truncate.pipe';
+import { FormatDatePipe } from '../format-date.pipe';
 import 'chartjs-adapter-date-fns';
 // Import Chart.js components
 import {
@@ -46,7 +48,7 @@ Chart.register(
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TruncateHashPipe, FormatDatePipe],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
 })
@@ -129,6 +131,10 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngAfterViewInit(): void {}
+
+  copy(value: string) {
+    navigator.clipboard.writeText(value);
+  }
 
   // Method for Block Chart
   initBlockChart() {

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { BlockService } from '../block.service';
 import { TruncateHashPipe } from '../truncate.pipe';
+import { FormatDatePipe } from '../format-date.pipe';
 
 @Component({
   selector: 'app-block-details',
   standalone: true,
-  imports: [CommonModule, TruncateHashPipe],
+  imports: [CommonModule, TruncateHashPipe, FormatDatePipe],
   templateUrl: './block-details.html',
   styleUrls: ['./block-details.css'],
 })
@@ -29,25 +30,54 @@ export class BlockDetails implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       const blockNumber = String(params['blockNumber']);
-      this.loadBlock(blockNumber);
+      if (!isNaN(Number(blockNumber))) {
+        this.loadBlockByNumber(blockNumber);
+      } else {
+        this.loadBlockByDataHash(blockNumber);
+      }
     });
   }
 
-  private loadBlock(blockNumber: string): void {
+  private loadBlockByNumber(blockNumber: string): void {
     this.error = null;
     this.loading = true;
 
     this.blockService.getBlockByNumber(blockNumber).subscribe({
       next: (data) => {
-        this.block = data.data || data;
-        this.loading = false; // update first
-        this.cdr.detectChanges(); // then detect changes
+        if (!data || !data.number) {
+          this.block = null;
+        } else {
+          this.block = data;
+        }
+        this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Failed to load block';
         this.loading = false;
         this.cdr.detectChanges();
-        console.error(err);
+      },
+    });
+  }
+
+  private loadBlockByDataHash(dataHash: string): void {
+    this.error = null;
+    this.loading = true;
+
+    this.blockService.getBlockByDataHash(dataHash).subscribe({
+      next: (data) => {
+        if (!data || !data.number) {
+          this.block = null;
+        } else {
+          this.block = data;
+        }
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = 'Failed to load block';
+        this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }

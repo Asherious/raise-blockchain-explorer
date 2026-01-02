@@ -6,6 +6,7 @@ export interface BlockData {
   blockHash?: string;
   txCount: number;
   txIds: string[];
+  txTimestamp: string[];
   size: number;
   timestamp: string;
 }

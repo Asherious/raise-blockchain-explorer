@@ -29,11 +29,6 @@ export const routes: Routes = [
     title: 'Raise Blockchain Explorer',
   },
   {
-    path: 'blocks/:dataHash',
-    component: BlockDetails,
-    title: 'Raise Blockchain Explorer',
-  },
-  {
     path: 'chaincodes',
     component: CHAINCODES,
     title: 'Raise Blockchain Explorer',
