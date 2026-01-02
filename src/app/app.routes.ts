@@ -11,32 +11,37 @@ export const routes: Routes = [
   {
     path: '',
     component: DASHBOARD,
-    title: 'Raise Blockchain Explorer - DASHBOARD',
+    title: 'Raise Blockchain Explorer',
   },
   {
     path: 'network',
     component: NETWORK,
-    title: 'Raise Blockchain Explorer - NETWORK',
+    title: 'Raise Blockchain Explorer',
   },
   {
     path: 'blocks',
     component: BLOCKS,
-    title: 'Raise Blockchain Explorer - BLOCKS',
+    title: 'Raise Blockchain Explorer',
   },
   {
-    path: 'blocks/:blockId',
+    path: 'blocks/:blockNumber',
     component: BlockDetails,
-    title: 'Raise Blockchain Explorer - BLOCK DETAILS',
+    title: 'Raise Blockchain Explorer',
+  },
+  {
+    path: 'blocks/:dataHash',
+    component: BlockDetails,
+    title: 'Raise Blockchain Explorer',
   },
   {
     path: 'chaincodes',
     component: CHAINCODES,
-    title: 'Raise Blockchain Explorer - CHAINCODES',
+    title: 'Raise Blockchain Explorer',
   },
   {
     path: 'channels',
     component: CHANNELS,
-    title: 'Raise Blockchain Explorer - CHANNELS',
+    title: 'Raise Blockchain Explorer',
   },
   {
     path: '**',

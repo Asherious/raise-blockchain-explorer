@@ -1,11 +1,26 @@
 <div
-  class="mx-12 mb-12 px-3 pb-3 space-y-3 text-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+  class="mx-12 mb-12 p-3 space-y-3 text-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
 >
-  <div class="grid grid-cols-5 py-[3.5px] m-0 text-[16px] font-medium">
+  <div class="grid grid-cols-5 mb-3 text-[16px] font-medium">
     <span>Chaincode</span>
     <span>Channel</span>
-    <span>Path</span>
+    <span>Sequence</span>
     <span>Transaction Count</span>
     <span>Version</span>
+  </div>
+  <div class="space-y-3">
+    <div *ngFor="let chaincode of chaincodeList">
+      <div
+        class="w-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+      >
+        <div class="grid grid-cols-5 py-4 text-[14px]">
+          <p class="font-medium dark:text-[#7F8493]">{{ chaincode.name }}</p>
+          <p class="text-gray-500">{{ chaincode.channel }}</p>
+          <p class="text-gray-500">{{ chaincode.sequence }}</p>
+          <p class="text-gray-500">{{ chaincode.txCount }}</p>
+          <p class="text-gray-500">{{ chaincode.version }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

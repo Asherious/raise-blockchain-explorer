@@ -1,8 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { BlockService } from '../block.service';
-import { BlockData } from '../block-data';
 import { TruncateHashPipe } from '../truncate.pipe';
 
 @Component({
@@ -13,10 +12,14 @@ import { TruncateHashPipe } from '../truncate.pipe';
   styleUrls: ['./block-details.css'],
 })
 export class BlockDetails implements OnInit {
+  textToCopy: string = '';
+  copied: boolean = false;
+
   private route = inject(ActivatedRoute);
   private blockService = inject(BlockService);
+  private cdr = inject(ChangeDetectorRef);
 
-  block?: BlockData;
+  block?: any;
   loading = false;
   error: string | null = null;
 
@@ -25,25 +28,26 @@ export class BlockDetails implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      const blockId = String(params['blockId']);
-      this.loadBlock(blockId);
+      const blockNumber = String(params['blockNumber']);
+      this.loadBlock(blockNumber);
     });
   }
 
-  private loadBlock(blockId: string): void {
+  private loadBlock(blockNumber: string): void {
     this.error = null;
     this.loading = true;
-    this.blockService.getBlockById(blockId).subscribe({
+
+    this.blockService.getBlockByNumber(blockNumber).subscribe({
       next: (data) => {
-        console.log('Block data received:', data);
         this.block = data.data || data;
-        this.loading = false;
+        this.loading = false; // update first
+        this.cdr.detectChanges(); // then detect changes
       },
       error: (err) => {
-        console.log('Error loading block:', err);
-        this.block = undefined;
-        this.error = 'Failed to load block details.';
+        this.error = 'Failed to load block';
         this.loading = false;
+        this.cdr.detectChanges();
+        console.error(err);
       },
     });
   }
@@ -65,5 +69,15 @@ export class BlockDetails implements OnInit {
   // Check if a transaction is open
   isTransactionOpen(index: number): boolean {
     return this.openSet.has(index);
+  }
+
+  copyText() {
+    navigator.clipboard.writeText(this.textToCopy).then(() => {
+      this.copied = true;
+      setTimeout(() => (this.copied = false), 2000);
+    });
+  }
+  copy(value: string) {
+    navigator.clipboard.writeText(value);
   }
 }

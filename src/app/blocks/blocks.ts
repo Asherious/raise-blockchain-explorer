@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
   AfterViewInit,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -33,7 +34,7 @@ export class BLOCKS implements OnInit, AfterViewInit {
   totalPages: number = 0;
 
   // Loading and error states
-  loading = true;
+
   error: string | null = null;
 
   // Drag-to-scroll
@@ -55,17 +56,21 @@ export class BLOCKS implements OnInit, AfterViewInit {
   }
 
   // Fetch block data from API
+  private cdr = inject(ChangeDetectorRef);
+
   fetchBlockData() {
-    this.loading = true;
     this.blockService.getAllBlocks().subscribe({
       next: (data) => {
         this.blockList = data;
-        // Sorting blocks
         this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
-        this.openTx = data.map(() => false); // initialize TX expand state
+        this.openTx = data.map(() => false);
         this.calculatePaginationDetails();
         this.updatePaginatedList();
-        this.loading = false;
+        this.cdr.detectChanges(); // Force update
+      },
+      error: (err) => {
+        this.error = 'Failed to fetch blocks';
+        this.cdr.detectChanges();
       },
     });
   }

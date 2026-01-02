@@ -7,12 +7,11 @@ import {
   Inject,
   inject,
   PLATFORM_ID,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { NodeData } from '../node-data';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { BlockData } from '../block-data';
 import 'chartjs-adapter-date-fns';
 // Import Chart.js components
 import {
@@ -54,11 +53,12 @@ Chart.register(
 export class DASHBOARD implements OnInit, AfterViewInit {
   // Inject HttpClient for API calls
   private http: HttpClient = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
   error: string | null = null;
-  // Mock node Data
-  nodeList: NodeData[] = [];
-  blockList: BlockData[] = [];
+
+  nodeList: any[] = [];
+  blockList: any[] = [];
   chaincodeList: any[] = [];
 
   get totalTransactions(): number {
@@ -78,20 +78,27 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   }
   // Fetch block data from API
   fetchBlockData() {
-    this.http.get<BlockData[]>('http://localhost:3000/blocks').subscribe({
+    this.http.get<any[]>('http://localhost:3000/blocks').subscribe({
       next: (data) => {
         this.blockList = data;
         // Sorting blocks
         this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
-        this.initChartsAfterData();
+        setTimeout(() => {
+          this.initBlockChart();
+          this.initTransactionChart();
+        }, 0);
+      },
+      error: (err) => {
+        this.error = 'Failed to fetch blocks';
       },
     });
   }
   //Fetch node data from API
   fetchNodeData() {
-    this.http.get<NodeData[]>('http://localhost:3000/nodes').subscribe({
+    this.http.get<any[]>('http://localhost:3000/nodes').subscribe({
       next: (data) => {
         this.nodeList = data;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -100,6 +107,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
     this.http.get<any[]>('http://localhost:3000/chaincodes').subscribe({
       next: (data) => {
         this.chaincodeList = data;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -108,11 +116,12 @@ export class DASHBOARD implements OnInit, AfterViewInit {
     if (isPlatformBrowser(this.platformId)) {
       // Ensure DOM is ready
       setTimeout(() => {
+        this.cdr.detectChanges(); // <-- ensures ViewChild exists
         if (this.blockList.length > 0) {
           this.initBlockChart();
           this.initTransactionChart();
         }
-      });
+      }, 0);
     }
   }
 

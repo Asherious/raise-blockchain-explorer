@@ -1,6 +1,6 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
@@ -20,7 +20,6 @@ export class BlockService {
       'Content-Type': 'application/json',
     });
 
-    // ✅ ONLY access localStorage in the browser
     if (includeAuth && isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
 
@@ -36,9 +35,9 @@ export class BlockService {
     return this.http.get(`${this.apiUrl}/blocks`, { headers: this.getHeaders() });
   }
 
-  getBlockById(blockId: string): Observable<any> {
+  getBlockByNumber(blockNumber: string): Observable<any> {
     return this.http
       .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })
-      .pipe(map((blocks: any[]) => blocks.find((b) => b.number === blockId)));
+      .pipe(map((blocks: any[]) => blocks.find((b) => b.number === blockNumber)));
   }
 }

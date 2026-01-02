@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-chaincodes',
@@ -8,6 +9,29 @@ import { CommonModule } from '@angular/common';
   templateUrl: './chaincodes.html',
   styleUrls: ['./chaincodes.css'],
 })
-export class CHAINCODES {
+export class CHAINCODES implements OnInit {
+  private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
+  error: string | null = null;
+  chaincodeList: any[] = [];
+
+  ngOnInit(): void {
+    this.fetchChaincodeData();
+  }
+
+  fetchChaincodeData(): void {
+    this.http.get<any[]>('http://localhost:3000/chaincodes').subscribe({
+      next: (data) => {
+        this.chaincodeList = data;
+        this.error = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = 'Failed to fetch chaincode data';
+        console.error(err);
+        this.cdr.detectChanges();
+      },
+    });
+  }
 }
