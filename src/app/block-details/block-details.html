@@ -21,66 +21,73 @@
       class="m-3 p-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
     >
       <p class="mb-3 text-[16px] font-medium">Details</p>
-      <div class="grid grid-cols-2">
+      <div class="">
         <div>
-          <p>Txs:</p>
-          <p>Data Hash:</p>
-          <p>Previous Hash:</p>
-          <p>Size:</p>
-          <p>Timestamp:</p>
-        </div>
-        <div>
-          <p class="text-gray-500">{{ block.txCount }}</p>
           <p>
+            Txs: <span class="text-gray-500">{{ block.txCount }}</span>
+          </p>
+          <p class="flex items-start gap-2 max-w-full">
+            <span class="shrink-0">Data Hash:</span>
+
             <button
-              class="cursor-pointer flex text-gray-500 hover:font-bold"
+              class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
               (click)="copy(block.dataHash)"
             >
-              <span>{{ block.dataHash | truncateHash }}</span>
-              <div class="p-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="size-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M16.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v8.25A2.25 2.25 0 0 0 6 16.5h2.25m8.25-8.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-7.5A2.25 2.25 0 0 1 8.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 0 0-2.25 2.25v6"
-                  />
-                </svg>
-              </div>
+              <span
+                class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
+              >
+                {{ block.dataHash }}
+              </span>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-4 shrink-0 mt-0.5"
+              >
+                <path
+                  d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
+                />
+                <path
+                  d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
+                />
+              </svg>
+            </button>
+          </p>
+          <p class="flex items-start gap-2 max-w-full">
+            <span class="shrink-0">Previous Hash:</span>
+
+            <button
+              class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
+              (click)="copy(block.previousHash)"
+            >
+              <span
+                class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
+              >
+                {{ block.previousHash }}
+              </span>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-4 shrink-0 mt-0.5"
+              >
+                <path
+                  d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
+                />
+                <path
+                  d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
+                />
+              </svg>
             </button>
           </p>
           <p>
-            <button
-              class="cursor-pointer flex text-gray-500 hover:font-bold"
-              (click)="copy(block.dataHash)"
-            >
-              <span class="text-gray-500">{{ block.previousHash | truncateHash }}&nbsp;</span>
-              <div class="p-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="size-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M16.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v8.25A2.25 2.25 0 0 0 6 16.5h2.25m8.25-8.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-7.5A2.25 2.25 0 0 1 8.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 0 0-2.25 2.25v6"
-                  />
-                </svg>
-              </div>
-            </button>
+            Size: <span class="text-gray-500">{{ block.size }} kB</span>
           </p>
-          <p class="text-gray-500">{{ block.size }} kB</p>
-          <p class="text-gray-500">{{ block.timestamp | formatDate }}</p>
+          <p>
+            Timestamp: <span class="text-gray-500">{{ block.timestamp | formatDate }}</span>
+          </p>
         </div>
       </div>
     </div>
@@ -101,11 +108,32 @@
             <div class="flex justify-between p-4">
               <div class="flex">
                 <span
-                  class="p-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+                  class="p-2 w-10 text-center bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
                   >TX</span
                 >
                 <div class="grid grid-rows-2 items-center">
-                  <p class="text-xs ml-4 text-gray-500">{{ txIds | truncateHash }}</p>
+                  <button
+                    class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
+                    (click)="copy(txIds)"
+                  >
+                    <span class="text-xs ml-4 text-gray-500">
+                      {{ txIds }}
+                    </span>
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      class="size-3 shrink-0 mt-0.5"
+                    >
+                      <path
+                        d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
+                      />
+                      <path
+                        d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
+                      />
+                    </svg>
+                  </button>
                   <p class="text-xs ml-4 text-gray-500">
                     {{ block.txTimestamp[i] | formatDate }}
                   </p>

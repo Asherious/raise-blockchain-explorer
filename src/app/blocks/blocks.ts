@@ -10,14 +10,12 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TruncateHashPipe } from '../truncate.pipe';
 import { BlockService } from '../block.service';
-import { BlockData } from '../block-data';
 
 @Component({
   selector: 'app-blocks',
   standalone: true,
-  imports: [CommonModule, RouterLink, TruncateHashPipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './blocks.html',
   styleUrls: ['./blocks.css'],
 })
@@ -26,7 +24,8 @@ export class BLOCKS implements OnInit, AfterViewInit {
   private blockService: BlockService = inject(BlockService);
 
   // Full block list and paginated view
-  paginatedBlockList: BlockData[] = [];
+  blockList: any[] = [];
+  paginatedBlockList: any[] = [];
 
   // Pagination
   pageSize: number = 10;
@@ -138,7 +137,4 @@ export class BLOCKS implements OnInit, AfterViewInit {
   copy(value: string) {
     navigator.clipboard.writeText(value);
   }
-
-  // Mock Block Data
-  blockList: BlockData[] = [];
 }

@@ -48,7 +48,7 @@ Chart.register(
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, TruncateHashPipe, FormatDatePipe],
+  imports: [CommonModule, RouterLink, FormatDatePipe],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
 })
@@ -88,6 +88,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
         setTimeout(() => {
           this.initBlockChart();
           this.initTransactionChart();
+          this.cdr.detectChanges();
         }, 0);
       },
       error: (err) => {

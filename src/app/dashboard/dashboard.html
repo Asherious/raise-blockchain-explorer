@@ -1,6 +1,6 @@
-<div class="mx-12 mb-12">
+<div class="mx-6 mb-6">
   <!-- Counter -->
-  <div
+  <!--<div
     class="grid grid-cols-4 gap-6 mb-12 max-w bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
   >
     <div class="p-[31px] flex flex-col items-center justify-center">
@@ -35,19 +35,19 @@
       </div>
       <p class="text-[16px] font-medium">CHAINCODES</p>
     </div>
-  </div>
-  <div class="grid grid-cols-2 gap-12 text-[16px]">
-    <div class="space-y-12">
+  </div>-->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-6 text-[16px]">
+    <div class="space-y-6">
       <!-- Peers -->
       <div
-        class="px-1 pt-3 pb-1 h-[310px] space-y-3 text-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+        class="px-1 pt-3 pb-1 h-77.5 space-y-3 text-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
       >
         <div class="grid grid-cols-2 mb-1 font-medium">
           <span>Peer</span>
           <span>Status</span>
         </div>
         <div
-          class="overscroll-none overflow-y-auto scrollbar-hide h-[265px] p-2 space-y-3 rounded-[10px]"
+          class="overscroll-none overflow-y-auto scrollbar-hide h-66.25 p-2 space-y-3 rounded-[10px]"
         >
           <div *ngFor="let node of nodeList">
             <div
@@ -73,22 +73,21 @@
           <span>Latest Blocks</span>
         </div>
         <div
-          class="overscroll-none overflow-y-auto scrollbar-hide h-[265px] p-2 space-y-3 rounded-[10px]"
+          class="overscroll-none overflow-y-auto scrollbar-hide h-66.25 p-2 space-y-3 rounded-[10px]"
         >
           <div *ngFor="let block of blockList">
-            <a [routerLink]="['/blocks', block.number]" class="block w-full">
+            <a [routerLink]="['/blocks', block.number]">
               <button
-                class="cursor-pointer p-[3.5px] w-full flex bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+                class="cursor-pointer p-[3.5px] w-full flex md:flex bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
               >
                 <div
                   class="p-[34.5px] bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
                 ></div>
-                <div class="px-[7px] text-left">
-                  <p class="text-[14px] font-medium dark:text-[#7F8493]">
-                    Block {{ block.number }}
+                <div class="px-[7px] text-left min-w-0">
+                  <p class="text-sm font-medium dark:text-[#7F8493]">Block {{ block.number }}</p>
+                  <p class="text-xs text-gray-500 truncate whitespace-nowrap text-ellipsis">
+                    Data Hash: {{ block.dataHash }}
                   </p>
-                  <!--<p class="text-xs text-gray-500">Channel: {{ block.channelName }}</p>-->
-                  <p class="text-xs text-gray-500">Data Hash:{{ block.dataHash | truncateHash }}</p>
                   <p class="text-xs text-gray-500">{{ block.txCount }} Txs</p>
                   <p class="text-xs text-gray-500">{{ block.timestamp | formatDate }}</p>
                 </div>
@@ -98,7 +97,8 @@
         </div>
       </div>
     </div>
-    <div class="space-y-12 text-[16px]">
+    <!-- Blocks and Transactions Charts -->
+    <div class="space-y-6 text-[16px]">
       <div
         class="p-3 h-[310px] space-y-4 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
       >

@@ -1,15 +1,55 @@
-import { Component, signal, effect, HostBinding, inject } from '@angular/core';
+import {
+  Component,
+  signal,
+  effect,
+  HostBinding,
+  inject,
+  ChangeDetectorRef,
+  PLATFORM_ID,
+  Inject,
+} from '@angular/core';
 import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive],
   templateUrl: './app.html',
   standalone: true,
-  styleUrls: ['./app.css'],
+  styleUrls: ['./app.scss'],
 })
 export class App {
+  // Inject HttpClient for API calls
+  private http: HttpClient = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
+
+  error: string | null = null;
+
+  blockList: any[] = [];
+
+  get totalTransactions(): number {
+    return this.blockList.reduce((sum, block) => sum + block.txCount, 0);
+  }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.fetchBlockData();
+    }
+  }
+  // Fetch block data from API
+  fetchBlockData() {
+    this.http.get<any[]>('http://localhost:3000/blocks').subscribe({
+      next: (data) => {
+        this.blockList = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = 'Failed to fetch blocks';
+      },
+    });
+  }
+
   title = 'Raise Blockchain Explorer';
   // Search Bar Functionality
   private router = inject(Router);
@@ -23,7 +63,7 @@ export class App {
   // Dark Mode Toggle
   darkMode = signal<boolean>(false);
 
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem('theme');

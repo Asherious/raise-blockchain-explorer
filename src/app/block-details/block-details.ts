@@ -2,13 +2,12 @@ import { Component, inject, OnInit, ChangeDetectorRef, NgModule } from '@angular
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { BlockService } from '../block.service';
-import { TruncateHashPipe } from '../truncate.pipe';
 import { FormatDatePipe } from '../format-date.pipe';
 
 @Component({
   selector: 'app-block-details',
   standalone: true,
-  imports: [CommonModule, TruncateHashPipe, FormatDatePipe],
+  imports: [CommonModule, FormatDatePipe],
   templateUrl: './block-details.html',
   styleUrls: ['./block-details.css'],
 })
