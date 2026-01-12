@@ -12,7 +12,6 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { TruncateHashPipe } from '../truncate.pipe';
 import { FormatDatePipe } from '../format-date.pipe';
 import 'chartjs-adapter-date-fns';
 // Import Chart.js components
@@ -91,9 +90,6 @@ export class DASHBOARD implements OnInit, AfterViewInit {
           this.cdr.detectChanges();
         }, 0);
       },
-      error: (err) => {
-        this.error = 'Failed to fetch blocks';
-      },
     });
   }
   //Fetch node data from API
@@ -132,10 +128,6 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngAfterViewInit(): void {}
-
-  copy(value: string) {
-    navigator.clipboard.writeText(value);
-  }
 
   // Method for Block Chart
   initBlockChart() {

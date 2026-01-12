@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef, NgModule } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, NgZone, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { BlockService } from '../block.service';
@@ -12,12 +12,12 @@ import { FormatDatePipe } from '../format-date.pipe';
   styleUrls: ['./block-details.css'],
 })
 export class BlockDetails implements OnInit {
-  textToCopy: string = '';
-  copied: boolean = false;
+  copied: string | null = null;
 
   private route = inject(ActivatedRoute);
   private blockService = inject(BlockService);
   private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
 
   block?: any;
   loading = false;
@@ -100,13 +100,15 @@ export class BlockDetails implements OnInit {
     return this.openSet.has(index);
   }
 
-  copyText() {
-    navigator.clipboard.writeText(this.textToCopy).then(() => {
-      this.copied = true;
-      setTimeout(() => (this.copied = false), 2000);
-    });
-  }
+  // Copy text to clipboard with feedback
   copy(value: string) {
     navigator.clipboard.writeText(value);
+
+    this.copied = value;
+
+    setTimeout(() => {
+      this.copied = null;
+      this.cdr.detectChanges();
+    }, 500);
   }
 }
