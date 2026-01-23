@@ -20,6 +20,8 @@ import { BlockService } from '../block.service';
   styleUrls: ['./blocks.css'],
 })
 export class BLOCKS implements OnInit, AfterViewInit {
+  // X-axis tick placeholders
+  ticks = Array.from({ length: 9 });
   // API + BlockService
   private blockService: BlockService = inject(BlockService);
 

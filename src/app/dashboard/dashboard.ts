@@ -52,6 +52,9 @@ Chart.register(
   styleUrls: ['./dashboard.css'],
 })
 export class DASHBOARD implements OnInit, AfterViewInit {
+  // X-axis tick placeholders
+  ticks = Array.from({ length: 9 });
+
   // Inject HttpClient for API calls
   private http: HttpClient = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
@@ -169,7 +172,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: { left: 10, right: 10 } },
+
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -208,7 +211,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             ticks: { source: 'auto', major: { enabled: true } },
           },
           y: {
-            display: true,
+            display: false,
             beginAtZero: true,
             ticks: { stepSize: 2 },
           },

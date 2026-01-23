@@ -7,6 +7,8 @@ import {
   ChangeDetectorRef,
   PLATFORM_ID,
   Inject,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -27,6 +29,8 @@ export class App {
   error: string | null = null;
 
   blockList: any[] = [];
+
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   get totalTransactions(): number {
     return this.blockList.reduce((sum, block) => sum + block.txCount, 0);
@@ -58,6 +62,7 @@ export class App {
     const id = val.trim();
     if (id) {
       this.router.navigate(['blocks', id]);
+      this.searchInput.nativeElement.value = '';
     }
   }
   // Dark Mode Toggle

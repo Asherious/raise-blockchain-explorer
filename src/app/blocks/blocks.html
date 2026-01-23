@@ -13,8 +13,22 @@
         <a [routerLink]="['/blocks', block.number]">
           <div class="px-3 flex-row">
             <button
-              class="cursor-pointer h-[70px] w-[70px] transition-transform duration-200 hover:scale-110 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
-            ></button>
+              class="relative cursor-pointer h-[70px] w-[70px] rounded-[10px] transition-transform duration-200 hover:scale-110 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)]"
+            >
+              <!-- Track -->
+              <div class="absolute inset-0 rounded-[10px] overflow-hidden">
+                <!-- Tick marks (10 max tx) -->
+                <div class="flex flex-col justify-between px-1 py-1 pointer-events-none">
+                  <span *ngFor="let _ of ticks"></span>
+                </div>
+
+                <!-- Fill -->
+                <div
+                  class="absolute bottom-0 w-full bg-[#008691]"
+                  [style.height.%]="(block.txCount / 10) * 100"
+                ></div>
+              </div>
+            </button>
             <p class="text-sm text-center font-regular text-gray-500 dark:text-[#7F8493]">
               #{{ block.number }}
             </p>
@@ -24,11 +38,11 @@
     </div>
   </div>
   <div
-    class="mx-6 mb-6 p-3 space-y-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+    class="mx-6 mb-6 px-3 pb-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
   >
     <!-- Header -->
     <div
-      class="grid grid-cols-[0.5fr_0.5fr_2fr_2fr_0.5fr] px-4 md:px-8 items-center text-sm md:text-base font-medium"
+      class="py-1.5 grid grid-cols-[0.5fr_0.5fr_2fr_2fr_0.5fr] px-4 md:px-8 items-center text-sm md:text-base font-medium"
     >
       <span>Block</span>
       <span>Txs</span>
@@ -36,13 +50,12 @@
       <span>Previous Hash</span>
       <span class="text-right">Size</span>
     </div>
-
-    <!-- Rows -->
+    <!-- Block List -->
     <div class="space-y-3">
       <a
         *ngFor="let block of paginatedBlockList"
         [routerLink]="['/blocks', block.number]"
-        class="block w-full rounded-[10px] bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)] transition"
+        class="block w-full rounded-[10px] bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
       >
         <div
           class="grid grid-cols-[0.5fr_0.5fr_2fr_2fr_0.5fr] min-w-0 py-4 px-4 md:px-8 items-center text-sm"
@@ -67,15 +80,27 @@
         </div>
       </a>
     </div>
-
     <!-- Pagination -->
-    <div class="flex justify-center items-center space-x-4">
+    <div class="flex justify-center items-center space-x-4 mt-3">
       <button
         (click)="previousPage()"
         [disabled]="currentPage === 1"
-        class="px-2.5 py-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] disabled:opacity-0"
+        class="cursor-pointer px-2.5 py-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] disabled:opacity-0"
       >
-        ←
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
       </button>
 
       <span class="text-sm font-medium dark:text-[#7F8493]">
@@ -85,9 +110,22 @@
       <button
         (click)="nextPage()"
         [disabled]="currentPage === totalPages"
-        class="px-2.5 py-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] disabled:opacity-0"
+        class="cursor-pointer px-2.5 py-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] disabled:opacity-0"
       >
-        →
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+          />
+        </svg>
       </button>
     </div>
   </div>

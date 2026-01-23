@@ -1,8 +1,10 @@
-import { Component, inject, OnInit, ChangeDetectorRef, NgZone, NgModule } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { BlockService } from '../block.service';
 import { FormatDatePipe } from '../format-date.pipe';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-block-details',
@@ -12,72 +14,139 @@ import { FormatDatePipe } from '../format-date.pipe';
   styleUrls: ['./block-details.css'],
 })
 export class BlockDetails implements OnInit {
+  // X-axis tick placeholders
+  ticks = Array.from({ length: 9 });
+  // Clipboard copy feedback
   copied: string | null = null;
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private blockService = inject(BlockService);
   private cdr = inject(ChangeDetectorRef);
-  private ngZone = inject(NgZone);
 
   block?: any;
   loading = false;
   error: string | null = null;
-
-  // Track multiple open transactions
+  txDetailsMap = new Map<string, any>();
+  loadingTx = new Set<string>();
   openSet = new Set<number>();
+  latestBlockNumber = 0;
 
-  ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      const blockNumber = String(params['blockNumber']);
-      if (!isNaN(Number(blockNumber))) {
-        this.loadBlockByNumber(blockNumber);
-      } else {
-        this.loadBlockByDataHash(blockNumber);
+  // Track how the block was loaded
+  searchedId: string = '';
+  loadMethod: 'number' | 'hash' | 'txid' = 'number';
+
+  private routeSub?: Subscription;
+  // Subscribe to route params
+  ngOnInit() {
+    // Fetch latest block number
+    this.blockService.getAllBlocks().subscribe({
+      next: (blocks: any[]) => {
+        if (blocks && blocks.length > 0) {
+          this.latestBlockNumber = Math.max(...blocks.map((b) => parseInt(b.number)));
+        }
+      },
+    });
+
+    this.routeSub = this.route.paramMap.subscribe(async (paramMap) => {
+      const id = paramMap.get('blockNumber') ?? '';
+      if (!id) return;
+
+      this.searchedId = id;
+      await this.tryLoadBlock(id);
+    });
+  }
+  // Cleanup subscription
+  ngOnDestroy() {
+    this.routeSub?.unsubscribe();
+  }
+
+  // Attempt to load block by number, then hash, then txid
+  private async tryLoadBlock(id: string): Promise<void> {
+    this.loading = true;
+    this.error = null;
+    this.block = undefined;
+    this.openSet.clear();
+    this.txDetailsMap.clear();
+    this.loadingTx.clear();
+
+    const attempts = [
+      { type: 'number' as const, call: () => this.blockService.getBlockByNumber(id) },
+      { type: 'hash' as const, call: () => this.blockService.getBlockByDataHash(id) },
+      { type: 'txid' as const, call: () => this.blockService.getBlockByTxId(id) },
+    ];
+
+    try {
+      let found = false;
+
+      for (const attempt of attempts) {
+        try {
+          const data = await firstValueFrom(attempt.call());
+          if (data?.number) {
+            this.loadMethod = attempt.type;
+            this.block = data;
+            this.openSet.clear();
+
+            if (attempt.type === 'txid') {
+              const index = this.block.txIds?.indexOf(this.searchedId);
+              if (index !== undefined && index !== -1) {
+                this.openSet.add(index);
+                this.loadTxDetails(this.searchedId);
+              }
+            }
+            found = true;
+            break;
+          }
+        } catch (innerErr) {
+          console.error(`Failed to load block by ${attempt.type}:`, innerErr);
+        }
       }
-    });
+
+      if (!found) {
+        this.block = null;
+        this.loadingTx.clear();
+        this.openSet.clear();
+        this.txDetailsMap.clear();
+      }
+    } catch {
+      this.error = 'Failed to load block';
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
   }
+  // Load transaction details for a given txId
+  loadTxDetails(txId: string) {
+    if (!txId || this.txDetailsMap.has(txId) || this.loadingTx.has(txId)) return;
 
-  private loadBlockByNumber(blockNumber: string): void {
-    this.error = null;
-    this.loading = true;
+    this.loadingTx.add(txId);
 
-    this.blockService.getBlockByNumber(blockNumber).subscribe({
-      next: (data) => {
-        if (!data || !data.number) {
-          this.block = null;
-        } else {
-          this.block = data;
+    this.blockService.getBlockTxDetails(txId).subscribe({
+      next: (txData) => {
+        if (!txData || !txData.asset) {
+          this.txDetailsMap.set(txId, null);
+          return;
         }
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.error = 'Failed to load block';
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-    });
-  }
 
-  private loadBlockByDataHash(dataHash: string): void {
-    this.error = null;
-    this.loading = true;
-
-    this.blockService.getBlockByDataHash(dataHash).subscribe({
-      next: (data) => {
-        if (!data || !data.number) {
-          this.block = null;
-        } else {
-          this.block = data;
+        // Parse authors if it's a JSON string
+        const asset = { ...txData.asset };
+        if (asset.authors && typeof asset.authors === 'string') {
+          try {
+            asset.authors = JSON.parse(asset.authors);
+          } catch {
+            asset.authors = [asset.authors];
+          }
         }
-        this.loading = false;
+
+        // Save parsed asset under txData
+        this.txDetailsMap.set(txId, { asset });
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        this.error = 'Failed to load block';
-        this.loading = false;
+      error: () => {
+        this.txDetailsMap.set(txId, null);
         this.cdr.detectChanges();
       },
+      complete: () => this.loadingTx.delete(txId),
     });
   }
 
@@ -87,11 +156,16 @@ export class BlockDetails implements OnInit {
   }
 
   // Toggle a transaction's open state
-  toggleTransaction(index: number): void {
+  toggleTransaction(index: number, txId: string): void {
     if (this.openSet.has(index)) {
       this.openSet.delete(index);
     } else {
       this.openSet.add(index);
+    }
+
+    // Always attempt to load TX details when toggled open
+    if (this.openSet.has(index)) {
+      this.loadTxDetails(txId);
     }
   }
 
@@ -110,5 +184,19 @@ export class BlockDetails implements OnInit {
       this.copied = null;
       this.cdr.detectChanges();
     }, 500);
+  }
+
+  // Navigate to previous block
+  goToPreviousBlock() {
+    if (this.block && parseInt(this.block.number) > 0) {
+      this.router.navigate(['/blocks', parseInt(this.block.number) - 1]);
+    }
+  }
+
+  // Navigate to next block
+  goToNextBlock() {
+    if (this.block && parseInt(this.block.number) < this.latestBlockNumber) {
+      this.router.navigate(['/blocks', parseInt(this.block.number) + 1]);
+    }
   }
 }

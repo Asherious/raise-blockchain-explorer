@@ -66,12 +66,12 @@
     </div>
     <!-- Blocks Chart -->
     <div
-      class="p-3 h-[282px] 2xl:h-[452px] space-y-4 text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      class="py-3 h-[282px] 2xl:h-[452px] space-y-4 text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
     >
       <div class="mb-3 font-medium text-center">Blocks in the last 24 hours</div>
 
-      <div class="relative w-full h-[calc(100%-48px)] rounded-22xl">
-        <canvas id="blockChart" #blockChartCanvas class="h-full"></canvas>
+      <div class="relative h-[calc(100%-48px)] w-[calc(100%+6px)] overflow-hidden">
+        <canvas id="blockChart" #blockChartCanvas class="w-full h-full"></canvas>
       </div>
     </div>
     <!-- Latest Blocks -->
@@ -82,16 +82,33 @@
         <span>Latest Blocks</span>
       </div>
       <div
+        *ngIf="blockList.length"
         class="overscroll-none overflow-y-auto scrollbar-hide h-[246px] 2xl:h-[414px] p-2 space-y-2.5 2xl:space-y-3 rounded-[10px]"
       >
         <div *ngFor="let block of blockList">
           <a [routerLink]="['/blocks', block.number]">
             <button
-              class="cursor-pointer p-[3.5px] w-full flex md:flex bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+              class="cursor-pointer p-[3.5px] w-full flex md:flex bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px] hover:-translate-y-1 duration-300"
             >
+              <!-- Tx Count Bar -->
               <div
-                class="p-8 2xl:p-10.5 bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
-              ></div>
+                class="relative p-8 2xl:p-10.5 rounded-[10px] bg-[#e0e4e7] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+              >
+                <!-- Track -->
+                <div class="absolute inset-0 rounded-[10px] overflow-hidden">
+                  <!-- Tick marks (10 max tx) -->
+                  <div class="flex flex-col justify-between p-1 pointer-events-none">
+                    <span *ngFor="let _ of ticks"></span>
+                  </div>
+
+                  <!-- Fill -->
+                  <div
+                    class="absolute bottom-0 w-full transition-all duration-300 ease-out bg-linear-to-br from-[#008691] via-[#6aa4a9] to-[#eb5d82]"
+                    [style.height.%]="(block.txCount / 10) * 100"
+                  ></div>
+                </div>
+              </div>
+
               <div class="px-[7px] text-left min-w-0">
                 <p class="text-xs 2xl:text-base font-medium dark:text-[#7F8493]">
                   Block {{ block.number }}

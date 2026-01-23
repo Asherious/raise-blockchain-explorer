@@ -1,6 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
@@ -45,5 +46,22 @@ export class BlockService {
     return this.http
       .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })
       .pipe(map((blocks: any[]) => blocks.find((block) => block.dataHash === dataHash)));
+  }
+
+  getBlockByTxId(txId: string): Observable<any> {
+    return this.http
+      .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })
+      .pipe(
+        map((blocks: any[]) => blocks.find((block) => block.txIds && block.txIds.includes(txId))),
+      );
+  }
+
+  getBlockTxDetails(txId: string): Observable<any> {
+    if (!txId) return new Observable((sub) => sub.complete());
+
+    return this.http.get<any>(`${this.apiUrl}/assets`, {
+      headers: this.getHeaders(false),
+      params: { txId },
+    });
   }
 }
