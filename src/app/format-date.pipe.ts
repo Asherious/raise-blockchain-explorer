@@ -30,6 +30,6 @@ export class FormatDatePipe implements PipeTransform {
     const offsetSign = offsetMinutes > 0 ? '-' : '+';
     const gmtOffset = `GMT${offsetSign}${offsetHours}`;
 
-    return `${day} ${month} ${year} • ${hours}:${minutes}:${seconds} ${gmtOffset}`;
+    return `${day} ${month} ${year} • ${hours}:${minutes}:${seconds} `;
   }
 }

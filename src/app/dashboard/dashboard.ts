@@ -97,7 +97,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   }
   //Fetch node data from API
   fetchNodeData() {
-    this.http.get<any[]>('http://localhost:3000/nodes').subscribe({
+    this.http.get<any[]>('http://localhost:3000/channelnodes').subscribe({
       next: (data) => {
         this.nodeList = data;
         this.cdr.detectChanges();
@@ -138,18 +138,18 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       console.error('Block Chart Canvas not found or not ready.');
       return;
     }
-    const ctx = this.blockChartRef.nativeElement;
+
     const aggregatedData = this.getAggregatedBlocksPerHour();
 
-    const bufferMs = 5 * 60 * 1000;
-    const nowBuffered = new Date(Date.now() + bufferMs).toISOString();
-    const twentyFourHoursAgoBuffered = new Date(
-      Date.now() - 24 * 60 * 60 * 1000 - bufferMs,
-    ).toISOString();
+    const ctx = this.blockChartRef.nativeElement;
+    ctx.style.width = '100%';
+    ctx.style.height = '100%';
+    Chart.getChart(ctx)?.destroy();
 
     const gradientblockFill = ctx.getContext('2d')!.createLinearGradient(0, 0, 0, 220);
-    gradientblockFill.addColorStop(0, 'rgba(57, 109, 187, 1)');
-    gradientblockFill.addColorStop(1, 'rgba(57, 109, 187,0)');
+    gradientblockFill.addColorStop(0, '#004491');
+    gradientblockFill.addColorStop(0.55, '#006391');
+    gradientblockFill.addColorStop(1, '#008691');
 
     new Chart(ctx, {
       type: 'line',
@@ -158,10 +158,9 @@ export class DASHBOARD implements OnInit, AfterViewInit {
           {
             label: 'Blocks',
             data: aggregatedData,
-            borderColor: '#396dbb',
             backgroundColor: gradientblockFill,
             tension: 0.2,
-            borderWidth: 3,
+            borderWidth: 0,
             pointRadius: 0,
             pointHitRadius: 10,
             fill: 'origin',
@@ -183,7 +182,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
                   return new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
-                    hour12: true,
+                    hour12: false,
                   }).format(date);
                 }
                 return '';
@@ -205,15 +204,13 @@ export class DASHBOARD implements OnInit, AfterViewInit {
           x: {
             type: 'time',
             display: false,
-            min: twentyFourHoursAgoBuffered,
-            max: nowBuffered,
-            time: { unit: 'hour', displayFormats: { hour: 'HH:mm' } },
+            time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } },
             ticks: { source: 'auto', major: { enabled: true } },
           },
           y: {
             display: false,
             beginAtZero: true,
-            ticks: { stepSize: 2 },
+            ticks: { stepSize: 1 },
           },
         },
       },
@@ -226,18 +223,18 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       console.error('Transaction Chart Canvas not found or not ready.');
       return;
     }
-    const ctx = this.txChartRef.nativeElement;
+
     const aggregatedData = this.getAggregatedTxPerHour();
 
-    const bufferMs = 5 * 60 * 1000;
-    const nowBuffered = new Date(Date.now() + bufferMs).toISOString();
-    const twentyFourHoursAgoBuffered = new Date(
-      Date.now() - 24 * 60 * 60 * 1000 - bufferMs,
-    ).toISOString();
+    const ctx = this.txChartRef.nativeElement;
+    ctx.style.width = '100%';
+    ctx.style.height = '100%';
+    Chart.getChart(ctx)?.destroy();
 
     const gradienttxFill = ctx.getContext('2d')!.createLinearGradient(0, 0, 0, 220);
-    gradienttxFill.addColorStop(0, 'rgba(101, 174, 97, 1)');
-    gradienttxFill.addColorStop(1, 'rgba(101, 174, 97, 0)');
+    gradienttxFill.addColorStop(0, '#ed2b2b');
+    gradienttxFill.addColorStop(0.55, '#eb5d5d');
+    gradienttxFill.addColorStop(1, '#eb5d82');
 
     new Chart(ctx, {
       type: 'line',
@@ -246,10 +243,9 @@ export class DASHBOARD implements OnInit, AfterViewInit {
           {
             label: 'Transactions',
             data: aggregatedData,
-            borderColor: '#65ae61',
             backgroundColor: gradienttxFill,
             tension: 0.2,
-            borderWidth: 3,
+            borderWidth: 0,
             pointRadius: 0,
             pointHitRadius: 10,
             fill: 'origin',
@@ -260,7 +256,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: { left: 10, right: 10 } },
+
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -271,7 +267,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
                   return new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
-                    hour12: true,
+                    hour12: false,
                   }).format(date);
                 }
                 return '';
@@ -293,15 +289,13 @@ export class DASHBOARD implements OnInit, AfterViewInit {
           x: {
             type: 'time',
             display: false,
-            min: twentyFourHoursAgoBuffered,
-            max: nowBuffered,
             time: { unit: 'hour', displayFormats: { hour: 'HH:mm' } },
             ticks: { source: 'auto', major: { enabled: true } },
           },
           y: {
-            display: true,
+            display: false,
             beginAtZero: true,
-            ticks: { stepSize: 2 },
+            ticks: { stepSize: 1 },
           },
         },
       },

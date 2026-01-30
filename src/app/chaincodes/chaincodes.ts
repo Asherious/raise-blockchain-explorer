@@ -1,6 +1,26 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef,
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import {
+  Chart,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Filler,
+} from 'chart.js';
+
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler);
 
 @Component({
   selector: 'app-chaincodes',
@@ -12,6 +32,11 @@ import { HttpClient } from '@angular/common/http';
 export class CHAINCODES implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+
+  @ViewChild('balanceChartCanvas')
+  balanceChartRef!: ElementRef<HTMLCanvasElement>;
+
+  private chart?: Chart;
 
   error: string | null = null;
   chaincodeList: any[] = [];

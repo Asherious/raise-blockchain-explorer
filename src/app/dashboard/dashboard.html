@@ -50,7 +50,7 @@
       >
         <div *ngFor="let node of nodeList">
           <div
-            class="py-[26px] grid grid-cols-2 place-items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
+            class="py-[25px] 2xl:py-[33.4px] grid grid-cols-2 place-items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[10px]"
           >
             <span>{{ node.name }}:{{ node.port }}</span>
             <span
@@ -66,14 +66,15 @@
     </div>
     <!-- Blocks Chart -->
     <div
-      class="py-3 h-[282px] 2xl:h-[452px] space-y-4 text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      class="pt-2.5 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
     >
-      <div class="mb-3 font-medium text-center">Blocks in the last 24 hours</div>
+      <div class="font-medium text-center mb-3 shrink-0">Blocks in the last 24 hours</div>
 
-      <div class="relative h-[calc(100%-48px)] w-[calc(100%+6px)] overflow-hidden">
-        <canvas id="blockChart" #blockChartCanvas class="w-full h-full"></canvas>
+      <div class="flex-1 min-h-0 overflow-hidden">
+        <canvas #blockChartCanvas class="block w-full h-full"></canvas>
       </div>
     </div>
+
     <!-- Latest Blocks -->
     <div
       class="px-1 pt-2.5 pb-1 h-[282px] 2xl:h-[452px] bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
@@ -103,13 +104,13 @@
 
                   <!-- Fill -->
                   <div
-                    class="absolute bottom-0 w-full transition-all duration-300 ease-out bg-linear-to-br from-[#008691] via-[#6aa4a9] to-[#eb5d82]"
+                    class="absolute bottom-0 w-full transition-all duration-300 ease-out bg-linear-to-br from-[#eb5d82] via-[#eb5d5d] to-[#ed2b2b]"
                     [style.height.%]="(block.txCount / 10) * 100"
                   ></div>
                 </div>
               </div>
 
-              <div class="px-[7px] text-left min-w-0">
+              <div class="px-2 text-left min-w-0">
                 <p class="text-xs 2xl:text-base font-medium dark:text-[#7F8493]">
                   Block {{ block.number }}
                 </p>
@@ -129,11 +130,11 @@
 
     <!-- Transactions Chart -->
     <div
-      class="p-3 h-[282px] 2xl:h-[452px] space-y-4 text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+      class="pt-2.5 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
     >
-      <div class="mb-3 font-medium text-center">Transactions in the last 24 hours</div>
-      <div class="relative w-full h-[calc(100%-48px)] rounded-22xl overflow-hidden">
-        <canvas id="txChart" #txChartCanvas class="h-full"></canvas>
+      <div class="font-medium text-center mb-3 shrink-0">Transactions in the last 24 hours</div>
+      <div class="flex-1 min-h-0 overflow-hidden">
+        <canvas #txChartCanvas class="block w-full h-full"></canvas>
       </div>
     </div>
   </div>
