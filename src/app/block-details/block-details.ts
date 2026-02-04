@@ -34,7 +34,7 @@ export class BlockDetails implements OnInit {
 
   // Track how the block was loaded
   searchedId: string = '';
-  loadMethod: 'number' | 'hash' | 'txid' = 'number';
+  loadMethod: 'number' | 'hash' | 'txid' | 'key' = 'number';
 
   private routeSub?: Subscription;
   // Subscribe to route params
@@ -74,24 +74,36 @@ export class BlockDetails implements OnInit {
       { type: 'number' as const, call: () => this.blockService.getBlockByNumber(id) },
       { type: 'hash' as const, call: () => this.blockService.getBlockByDataHash(id) },
       { type: 'txid' as const, call: () => this.blockService.getBlockByTxId(id) },
+      { type: 'key' as const, call: () => this.blockService.getBlockByKey(id) },
     ];
 
     try {
       let found = false;
+      let foundTxId: string | null = null;
 
       for (const attempt of attempts) {
         try {
-          const data = await firstValueFrom(attempt.call());
+          let data = await firstValueFrom(attempt.call());
+
+          // Special handling for key search: getBlockByKey returns a txId, need to find the block
+          if (attempt.type === 'key' && data) {
+            foundTxId = data; // Save the txId found by key search
+            data = await firstValueFrom(this.blockService.getBlockByTxId(data));
+          } else if (attempt.type === 'txid') {
+            foundTxId = this.searchedId;
+          }
+
           if (data?.number) {
             this.loadMethod = attempt.type;
             this.block = data;
             this.openSet.clear();
 
-            if (attempt.type === 'txid') {
-              const index = this.block.txIds?.indexOf(this.searchedId);
+            if (attempt.type === 'txid' || attempt.type === 'key') {
+              const txIdToFind = foundTxId || this.searchedId;
+              const index = this.block.txIds?.indexOf(txIdToFind);
               if (index !== undefined && index !== -1) {
                 this.openSet.add(index);
-                this.loadTxDetails(this.searchedId);
+                this.loadTxDetails(txIdToFind);
               }
             }
             found = true;
@@ -138,8 +150,8 @@ export class BlockDetails implements OnInit {
           }
         }
 
-        // Save parsed asset under txData
-        this.txDetailsMap.set(txId, { asset });
+        // Save full txData including key
+        this.txDetailsMap.set(txId, txData);
         this.cdr.detectChanges();
       },
       error: () => {

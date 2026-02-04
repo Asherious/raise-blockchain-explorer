@@ -56,6 +56,20 @@ export class BlockService {
       );
   }
 
+  getBlockByKey(key: string): Observable<any> {
+    // Query all assets and find the one with matching key
+    return this.http.get<any[]>(`${this.apiUrl}/assets`, { headers: this.getHeaders(false) }).pipe(
+      map((assets) => {
+        const asset = assets.find((a) => a.key === key);
+        if (asset?.record?.txId) {
+          // txId is inside record
+          return asset.record.txId;
+        }
+        return null;
+      }),
+    );
+  }
+
   getBlockTxDetails(txId: string): Observable<any> {
     if (!txId) return new Observable((sub) => sub.complete());
 

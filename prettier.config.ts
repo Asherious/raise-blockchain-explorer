@@ -5,3 +5,6 @@ const config: Config = {
 };
 
 module.exports = config;
+export default {
+  content: ['./src/**/*.{html,ts,tsx,js,jsx}'],
+};

@@ -146,7 +146,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
     ctx.style.height = '100%';
     Chart.getChart(ctx)?.destroy();
 
-    const gradientblockFill = ctx.getContext('2d')!.createLinearGradient(0, 0, 0, 220);
+    const gradientblockFill = ctx.getContext('2d')!.createLinearGradient(0, 0, 0, 400);
     gradientblockFill.addColorStop(0, '#004491');
     gradientblockFill.addColorStop(0.55, '#006391');
     gradientblockFill.addColorStop(1, '#008691');
@@ -200,6 +200,9 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             },
           },
         },
+        interaction: {
+          intersect: false,
+        },
         scales: {
           x: {
             type: 'time',
@@ -208,9 +211,15 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             ticks: { source: 'auto', major: { enabled: true } },
           },
           y: {
-            display: false,
-            beginAtZero: true,
-            ticks: { stepSize: 1 },
+            display: true,
+            min: 0,
+            suggestedMax: 100,
+            ticks: {
+              stepSize: 1,
+              callback: function (value: any) {
+                return value === 0 ? '' : value;
+              },
+            },
           },
         },
       },
@@ -231,7 +240,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
     ctx.style.height = '100%';
     Chart.getChart(ctx)?.destroy();
 
-    const gradienttxFill = ctx.getContext('2d')!.createLinearGradient(0, 0, 0, 220);
+    const gradienttxFill = ctx.getContext('2d')!.createLinearGradient(0, 0, 0, 400);
     gradienttxFill.addColorStop(0, '#ed2b2b');
     gradienttxFill.addColorStop(0.55, '#eb5d5d');
     gradienttxFill.addColorStop(1, '#eb5d82');
@@ -285,6 +294,9 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             },
           },
         },
+        interaction: {
+          intersect: false,
+        },
         scales: {
           x: {
             type: 'time',
@@ -293,9 +305,15 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             ticks: { source: 'auto', major: { enabled: true } },
           },
           y: {
-            display: false,
-            beginAtZero: true,
-            ticks: { stepSize: 1 },
+            display: true,
+            min: 0,
+            suggestedMax: 100,
+            ticks: {
+              stepSize: 1,
+              callback: function (value: any) {
+                return value === 0 ? '' : value;
+              },
+            },
           },
         },
       },
@@ -311,7 +329,10 @@ export class DASHBOARD implements OnInit, AfterViewInit {
     for (let i = 24; i >= 0; i--) {
       const startOfHour = new Date(now - i * oneHour);
       startOfHour.setMinutes(0, 0, 0);
-      hourlyBins[startOfHour.getTime()] = { count: 0, latestTs: startOfHour.getTime() };
+      hourlyBins[startOfHour.getTime()] = {
+        count: 0,
+        latestTs: startOfHour.getTime(),
+      };
     }
 
     this.blockList.forEach((block) => {
@@ -322,7 +343,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
         blockDate.setMinutes(0, 0, 0);
         const key = blockDate.getTime();
 
-        if (hourlyBins.hasOwnProperty(key)) {
+        if (hourlyBins[key]) {
           hourlyBins[key].count++;
           if (blockTs > hourlyBins[key].latestTs) {
             hourlyBins[key].latestTs = blockTs;
@@ -331,11 +352,29 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       }
     });
 
+    /* 🔥 ADD 30 FAKE ENTRIES HERE */
+    for (let i = 1; i <= 50; i++) {
+      const fakeHour = new Date(now - (24 + i) * oneHour);
+      fakeHour.setMinutes(0, 0, 0);
+
+      const fakeKey = fakeHour.getTime();
+
+      if (!hourlyBins[fakeKey]) {
+        hourlyBins[fakeKey] = {
+          count: Math.floor(Math.random() * 100) + 1, // fake block count
+          latestTs: fakeKey,
+        };
+      }
+    }
+
     return Object.keys(hourlyBins)
       .sort((a, b) => Number(a) - Number(b))
       .map((timestampStr) => {
         const hourBin = hourlyBins[Number(timestampStr)];
-        return { x: new Date(hourBin.latestTs), y: hourBin.count };
+        return {
+          x: new Date(hourBin.latestTs),
+          y: hourBin.count,
+        };
       });
   }
 

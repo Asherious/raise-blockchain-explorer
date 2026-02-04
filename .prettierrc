@@ -5,6 +5,7 @@
     "prettier-plugin-tailwindcss"
   ],
   "tailwindConfig": "./tailwind.config.ts",
+  "tailwindStylesheet": "./src/app.css",
   "tailwindAttributes": ["tw"],
   "tailwindFunctions": ["tw"]
 }
