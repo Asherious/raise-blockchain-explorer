@@ -29,6 +29,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
+import { environment } from '../../environment/environment';
 
 Chart.register(
   LineController,
@@ -82,7 +83,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   }
   // Fetch block data from API
   fetchBlockData() {
-    this.http.get<any[]>('http://localhost:3000/blocks').subscribe({
+    this.http.get<any[]>(`${environment.apiURL}/blocks`).subscribe({
       next: (data) => {
         this.blockList = data;
         // Sorting blocks
@@ -97,7 +98,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   }
   //Fetch node data from API
   fetchNodeData() {
-    this.http.get<any[]>('http://localhost:3000/channelnodes').subscribe({
+    this.http.get<any[]>(`${environment.apiURL}/channelnodes`).subscribe({
       next: (data) => {
         this.nodeList = data;
         this.cdr.detectChanges();
@@ -106,7 +107,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
   }
   //Fetch chaincode data from API
   fetchChaincodeData() {
-    this.http.get<any[]>('http://localhost:3000/chaincodes').subscribe({
+    this.http.get<any[]>(`${environment.apiURL}/chaincodes`).subscribe({
       next: (data) => {
         this.chaincodeList = data;
         this.cdr.detectChanges();
@@ -138,6 +139,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       console.error('Block Chart Canvas not found or not ready.');
       return;
     }
+    const isDark = document.documentElement.classList.contains('dark');
 
     const aggregatedData = this.getAggregatedBlocksPerHour();
 
@@ -171,7 +173,11 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-
+        layout: {
+          padding: {
+            left: 10,
+          },
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -214,8 +220,19 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             display: true,
             min: 0,
             suggestedMax: 100,
+            border: {
+              width: 0,
+            },
+            grid: {
+              display: false,
+            },
             ticks: {
-              stepSize: 1,
+              font: {
+                family: 'Poppins, sans-serif',
+                weight: 'bolder',
+                size: 12,
+              },
+              stepSize: 10,
               callback: function (value: any) {
                 return value === 0 ? '' : value;
               },
@@ -265,7 +282,11 @@ export class DASHBOARD implements OnInit, AfterViewInit {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-
+        layout: {
+          padding: {
+            left: 10,
+          },
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -308,8 +329,18 @@ export class DASHBOARD implements OnInit, AfterViewInit {
             display: true,
             min: 0,
             suggestedMax: 100,
+            border: {
+              width: 0,
+            },
+            grid: {
+              display: false,
+            },
             ticks: {
-              stepSize: 1,
+              font: {
+                family: 'Poppins, sans-serif',
+                weight: 'bolder',
+              },
+              stepSize: 10,
               callback: function (value: any) {
                 return value === 0 ? '' : value;
               },
@@ -353,7 +384,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
     });
 
     /* 🔥 ADD 30 FAKE ENTRIES HERE */
-    for (let i = 1; i <= 50; i++) {
+    /*for (let i = 1; i <= 50; i++) {
       const fakeHour = new Date(now - (24 + i) * oneHour);
       fakeHour.setMinutes(0, 0, 0);
 
@@ -365,7 +396,7 @@ export class DASHBOARD implements OnInit, AfterViewInit {
           latestTs: fakeKey,
         };
       }
-    }
+    }*/
 
     return Object.keys(hourlyBins)
       .sort((a, b) => Number(a) - Number(b))

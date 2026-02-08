@@ -48,6 +48,25 @@ export class BlockService {
       .pipe(map((blocks: any[]) => blocks.find((block) => block.dataHash === dataHash)));
   }
 
+  getBlockByCurrentBlockHash(currentBlockHash: string): Observable<any> {
+    return this.http
+      .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })
+      .pipe(
+        map((blocks: any[]) => blocks.find((block) => block.currentBlockHash === currentBlockHash)),
+      );
+  }
+
+  getPreviousBlockHash(blockNumber: string): Observable<any> {
+    return this.http
+      .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })
+      .pipe(
+        map(
+          (blocks: any[]) =>
+            blocks.find((block) => block.number === blockNumber)?.previousBlockHash,
+        ),
+      );
+  }
+
   getBlockByTxId(txId: string): Observable<any> {
     return this.http
       .get<any[]>(`${this.apiUrl}/blocks`, { headers: this.getHeaders(false) })

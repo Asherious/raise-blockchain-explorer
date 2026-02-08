@@ -2,6 +2,7 @@ import { Component, inject, OnInit, ViewChild, ElementRef, ChangeDetectorRef } f
 
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environment/environment';
 
 @Component({
   selector: 'app-chaincodes',
@@ -25,7 +26,7 @@ export class CHAINCODES implements OnInit {
   }
 
   fetchChaincodeData(): void {
-    this.http.get<any[]>('http://localhost:3000/chaincodes').subscribe({
+    this.http.get<any[]>(`${environment.apiURL}/chaincodes`).subscribe({
       next: (data) => {
         this.chaincodeList = data;
         this.error = null;

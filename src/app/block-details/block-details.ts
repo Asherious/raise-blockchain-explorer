@@ -73,6 +73,8 @@ export class BlockDetails implements OnInit {
     const attempts = [
       { type: 'number' as const, call: () => this.blockService.getBlockByNumber(id) },
       { type: 'hash' as const, call: () => this.blockService.getBlockByDataHash(id) },
+      { type: 'hash' as const, call: () => this.blockService.getBlockByCurrentBlockHash(id) },
+      { type: 'hash' as const, call: () => this.blockService.getPreviousBlockHash(id) },
       { type: 'txid' as const, call: () => this.blockService.getBlockByTxId(id) },
       { type: 'key' as const, call: () => this.blockService.getBlockByKey(id) },
     ];

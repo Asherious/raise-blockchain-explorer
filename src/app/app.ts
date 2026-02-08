@@ -13,6 +13,7 @@ import {
 import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environment/environment';
 
 @Component({
   selector: 'app-root',
@@ -43,13 +44,10 @@ export class App {
   }
   // Fetch block data from API
   fetchBlockData() {
-    this.http.get<any[]>('http://localhost:3000/blocks').subscribe({
+    this.http.get<any[]>(`${environment.apiURL}/blocks`).subscribe({
       next: (data) => {
         this.blockList = data;
         this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.error = 'Failed to fetch blocks';
       },
     });
   }

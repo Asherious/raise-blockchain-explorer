@@ -2,7 +2,7 @@
 <div>
   <div>
     <div
-      class="z-10 relative w-screen top-[55px] h-2 bg-[#e0e4e7] shadow-[inset_0px_3px_6px_#c8c8c8,inset_0px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_0px_3px_6px_rgba(0,0,0,0.3),inset_0px_-3px_6px_rgba(255,255,255,0.08)]"
+      class="z-10 relative w-screen top-[55px] h-2 bg-[#e0e4e7] shadow-[inset_0px_3px_6px_#c8c8c8,inset_0px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_0px_3px_6px_#0000004d,inset_0px_-3px_6px_#ffffff14]"
     ></div>
     <div
       #scrollContainer
@@ -13,7 +13,7 @@
         <a [routerLink]="['/blocks', block.number]">
           <div class="px-3 flex-row">
             <button
-              class="relative cursor-pointer h-[70px] w-[70px] rounded-[10px] transition-transform duration-200 hover:scale-110 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)]"
+              class="relative cursor-pointer h-[70px] w-[70px] rounded-[10px] transition-transform duration-200 hover:scale-110 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
             >
               <!-- Track -->
               <div class="absolute inset-0 rounded-[10px] overflow-hidden">
@@ -38,15 +38,16 @@
     </div>
   </div>
   <div
-    class="mx-6 mb-6 px-3 pt-2 pb-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] rounded-[25px]"
+    class="mx-6 mb-6 px-3 pt-2 pb-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
   >
     <!-- Header -->
     <div
-      class="mb-2 grid grid-cols-[0.5fr_0.5fr_2fr_2fr_0.5fr] px-4 md:px-8 items-center text-sm md:text-base font-medium"
+      class="mb-2 grid grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] px-4 md:px-8 items-center text-sm md:text-base font-medium"
     >
       <span>Block</span>
       <span>Txs</span>
       <span>Data Hash</span>
+      <span>Block Hash</span>
       <span>Previous Hash</span>
       <span class="text-right">Size</span>
     </div>
@@ -55,10 +56,10 @@
       <a
         *ngFor="let block of paginatedBlockList"
         [routerLink]="['/blocks', block.number]"
-        class="block w-full rounded-[10px] bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.08)]"
+        class="block w-full rounded-[10px] bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
       >
         <div
-          class="grid grid-cols-[0.5fr_0.5fr_2fr_2fr_0.5fr] min-w-0 py-4 px-4 md:px-8 items-center text-sm"
+          class="grid grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] min-w-0 py-4 px-4 md:px-8 items-center text-sm"
         >
           <p class="font-medium text-lg text-left dark:text-[#7F8493]">
             {{ block.number }}
@@ -68,24 +69,23 @@
             {{ block.txCount }}
           </p>
 
-          <p class="text-gray-500 truncate min-w-0 text-left">
-            {{ block.dataHash }}
-          </p>
+          <p class="text-gray-500 truncate min-w-0 text-left">{{ block.dataHash }}</p>
 
-          <p class="text-gray-500 truncate min-w-0 text-left">
-            {{ block.previousHash }}
-          </p>
+          <p class="text-gray-500 truncate min-w-0 text-left">{{ block.currentBlockHash }}</p>
+
+          <p class="text-gray-500 truncate min-w-0 text-left">{{ block.previousBlockHash }}</p>
 
           <p class="text-gray-500 text-right">{{ block.size }} kB</p>
         </div>
       </a>
     </div>
     <!-- Pagination -->
-    <div class="flex justify-center items-center space-x-4 mt-3">
+    <div class="flex justify-center items-center space-x-3 mt-3">
+      <!-- Previous Page -->
       <button
         (click)="previousPage()"
         [disabled]="currentPage === 1"
-        class="cursor-pointer px-2.5 py-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] disabled:opacity-0"
+        class="cursor-pointer p-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] disabled:opacity-0 disabled:cursor-not-allowed transition-all hover:scale-105 hover:bg-[#e0e4e7] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:bg-[#24272C] hover:dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +93,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="size-4"
+          class="size-4 dark:text-[#7F8493]"
         >
           <path
             stroke-linecap="round"
@@ -103,14 +103,28 @@
         </svg>
       </button>
 
-      <span class="text-sm font-medium dark:text-[#7F8493]">
-        Page {{ currentPage }} of {{ totalPages }}
-      </span>
+      <!-- Numbered Pages -->
+      <button
+        *ngFor="let page of visiblePages"
+        (click)="goToPage(page)"
+        [class.bg-[#e0e4e7]]="currentPage === page"
+        [class.dark:bg-[#24272C]]="currentPage === page"
+        [class.shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff]]="
+          currentPage === page
+        "
+        [class.dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]]="
+          currentPage === page
+        "
+        class="cursor-pointer size-9 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-all hover:scale-105 hover:bg-[#e0e4e7] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:bg-[#24272C] hover:dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+      >
+        <span class="text-sm dark:text-[#7F8493]">{{ page }}</span>
+      </button>
 
+      <!-- Next Page -->
       <button
         (click)="nextPage()"
         [disabled]="currentPage === totalPages"
-        class="cursor-pointer px-2.5 py-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.08)] disabled:opacity-0"
+        class="cursor-pointer p-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] disabled:opacity-0 disabled:cursor-not-allowed transition-all hover:scale-105 hover:bg-[#e0e4e7] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:bg-[#24272C] hover:dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +132,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="size-4"
+          class="size-4 dark:text-[#7F8493]"
         >
           <path
             stroke-linecap="round"

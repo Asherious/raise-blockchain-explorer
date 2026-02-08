@@ -33,6 +33,9 @@ export class BLOCKS implements OnInit, AfterViewInit {
   pageSize: number = 10;
   currentPage: number = 1;
   totalPages: number = 0;
+  // Visible page numbers for numbered pagination
+  visiblePages: number[] = [];
+  maxVisiblePages: number = 3;
 
   // Loading and error states
 
@@ -66,6 +69,7 @@ export class BLOCKS implements OnInit, AfterViewInit {
         this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
         this.openTx = data.map(() => false);
         this.calculatePaginationDetails();
+        this.calculateVisiblePages();
         this.updatePaginatedList();
         this.cdr.detectChanges(); // Force update
       },
@@ -101,6 +105,7 @@ export class BLOCKS implements OnInit, AfterViewInit {
   constructor() {
     this.calculatePaginationDetails();
     this.updatePaginatedList();
+    this.calculateVisiblePages();
   }
   // Mouse down event to initiate dragging
   onMouseDown(e: MouseEvent): void {
@@ -120,11 +125,29 @@ export class BLOCKS implements OnInit, AfterViewInit {
     const endIndex = startIndex + this.pageSize;
     this.paginatedBlockList = this.blockList.slice(startIndex, endIndex);
   }
+  // Calculate visible page numbers for numbered pagination
+  calculateVisiblePages(): void {
+    const half = Math.floor(this.maxVisiblePages / 2);
+    let start = Math.max(1, this.currentPage - half);
+    let end = Math.min(this.totalPages, start + this.maxVisiblePages - 1);
+
+    // Adjust start if we're at the end
+    if (end - start + 1 < this.maxVisiblePages) {
+      start = Math.max(1, end - this.maxVisiblePages + 1);
+    }
+
+    this.visiblePages = [];
+    for (let i = start; i <= end; i++) {
+      this.visiblePages.push(i);
+    }
+  }
+
   // Navigate to a specific page
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePaginatedList();
+      this.calculateVisiblePages();
     }
   }
   // Navigate to next page
