@@ -66,11 +66,10 @@
     </div>
     <!-- Blocks Chart -->
     <div
-      class="px-2 pb-8 pt-2 flex flex-col h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
+      class="p-2 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
     >
       <div class="font-medium text-center shrink-0">Blocks in the last 24 hours</div>
-
-      <canvas #blockChartCanvas class="block w-full h-full"></canvas>
+      <canvas #blockChartCanvas class="flex-1 min-h-0 overflow-hidden block w-full h-full"></canvas>
     </div>
 
     <!-- Latest Blocks -->
@@ -128,12 +127,10 @@
 
     <!-- Transactions Chart -->
     <div
-      class="pt-2 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
+      class="p-2 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
     >
-      <div class="font-medium text-center mb-3 shrink-0">Transactions in the last 24 hours</div>
-      <div class="flex-1 min-h-0 overflow-hidden">
-        <canvas #txChartCanvas class="block w-full h-full translate-y-2.5"></canvas>
-      </div>
+      <div class="font-medium text-center shrink-0">Transactions in the last 24 hours</div>
+      <canvas #txChartCanvas class="flex-1 min-h-0 overflow-hidden block w-full h-full"></canvas>
     </div>
   </div>
 </div>

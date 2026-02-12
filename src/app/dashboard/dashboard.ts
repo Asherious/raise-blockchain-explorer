@@ -407,6 +407,82 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
     gradienttxFill.addColorStop(0.55, '#eb5d5d');
     gradienttxFill.addColorStop(1, '#eb5d82');
 
+    // Store reference to this class for the plugin
+    const dashboardComponent = this;
+
+    //backgroundFill - uses class property for dynamic theme
+    const backgroundFill = {
+      id: 'backgroundFill',
+      beforeDraw(chart: {
+        ctx: CanvasRenderingContext2D;
+        chartArea: { top: number; left: number; width: number; height: number };
+      }) {
+        const ctx = chart.ctx;
+        const { top, left, width, height } = chart.chartArea;
+        const radius = 15;
+        const shadowSize = 8;
+        const isDarkMode = dashboardComponent.isDarkMode;
+
+        const bgColor = isDarkMode ? '#24272C' : '#e0e4e7';
+        const darkShadow = isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.1)';
+        const lightShadow = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)';
+
+        ctx.save();
+
+        // Rounded rectangle path
+        ctx.beginPath();
+        ctx.moveTo(left + radius, top);
+        ctx.lineTo(left + width - radius, top);
+        ctx.quadraticCurveTo(left + width, top, left + width, top + radius);
+        ctx.lineTo(left + width, top + height - radius);
+        ctx.quadraticCurveTo(left + width, top + height, left + width - radius, top + height);
+        ctx.lineTo(left + radius, top + height);
+        ctx.quadraticCurveTo(left, top + height, left, top + height - radius);
+        ctx.lineTo(left, top + radius);
+        ctx.quadraticCurveTo(left, top, left + radius, top);
+        ctx.closePath();
+
+        // Fill the background
+        ctx.fillStyle = bgColor;
+        ctx.fill();
+
+        // Clip to the rounded rectangle to make shadows respect corners
+        ctx.save();
+        ctx.clip();
+
+        // Top shadow
+        let grad = ctx.createLinearGradient(0, top, 0, top + shadowSize);
+        grad.addColorStop(0, darkShadow);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(left, top, width, shadowSize);
+
+        // Bottom shadow
+        grad = ctx.createLinearGradient(0, top + height - shadowSize, 0, top + height);
+        grad.addColorStop(0, 'rgba(255,255,255,0)');
+        grad.addColorStop(1, lightShadow);
+        ctx.fillStyle = grad;
+        ctx.fillRect(left, top + height - shadowSize, width, shadowSize);
+
+        // Left shadow
+        grad = ctx.createLinearGradient(left, 0, left + shadowSize, 0);
+        grad.addColorStop(0, darkShadow);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(left, top, shadowSize, height);
+
+        // Right shadow
+        grad = ctx.createLinearGradient(left + width - shadowSize, 0, left + width, 0);
+        grad.addColorStop(0, 'rgba(255,255,255,0)');
+        grad.addColorStop(1, lightShadow);
+        ctx.fillStyle = grad;
+        ctx.fillRect(left + width - shadowSize, top, shadowSize, height);
+
+        ctx.restore();
+        ctx.restore();
+      },
+    };
+
     this.txChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -424,14 +500,15 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
           },
         ],
       },
+      plugins: [backgroundFill],
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
         layout: {
           padding: {
-            left: 10,
+            right: 24,
           },
         },
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -465,10 +542,33 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
         },
         scales: {
           x: {
+            display: true,
             type: 'time',
-            display: false,
-            time: { unit: 'hour', displayFormats: { hour: 'HH:mm' } },
-            ticks: { source: 'auto', major: { enabled: true } },
+            time: {
+              unit: 'hour',
+              displayFormats: {
+                hour: 'HH:mm',
+              },
+            },
+            border: {
+              width: 0,
+            },
+            grid: {
+              display: false,
+            },
+            ticks: {
+              padding: 0,
+              stepSize: 4,
+              source: 'auto',
+              major: {
+                enabled: true,
+              },
+              font: {
+                family: 'Poppins, sans-serif',
+                weight: 'bolder',
+                size: 12,
+              },
+            },
           },
           y: {
             display: true,
@@ -481,9 +581,11 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
               display: false,
             },
             ticks: {
+              padding: 0,
               font: {
                 family: 'Poppins, sans-serif',
                 weight: 'bolder',
+                size: 12,
               },
               stepSize: 10,
               callback: function (value: any) {
