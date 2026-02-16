@@ -197,7 +197,7 @@ export class BlockDetails implements OnInit {
     setTimeout(() => {
       this.copied = null;
       this.cdr.detectChanges();
-    }, 500);
+    }, 1000);
   }
 
   // Navigate to previous block

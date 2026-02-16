@@ -15,3 +15,8 @@
     display: none;
   }
 }
+.no-transition *:not(.theme-toggle-anim),
+.no-transition *:not(.theme-toggle-anim)::before,
+.no-transition *:not(.theme-toggle-anim)::after {
+  transition: none !important;
+}

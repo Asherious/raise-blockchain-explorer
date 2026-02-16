@@ -106,7 +106,7 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
   }
   //Fetch node data from API
   fetchNodeData() {
-    this.http.get<any[]>(`${environment.apiURL}/channelnodes`).subscribe({
+    this.http.get<any[]>(`${environment.apiURL}/nodes`).subscribe({
       next: (data) => {
         this.nodeList = data;
         this.cdr.detectChanges();
@@ -270,6 +270,21 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
 
         ctx.restore();
         ctx.restore();
+      },
+
+      beforeDatasetsDraw(chart: any) {
+        const { ctx, chartArea } = chart;
+        const { top, left, width, height } = chartArea;
+        const radius = 15;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(left, top, width, height, radius);
+        ctx.clip();
+      },
+
+      afterDatasetsDraw(chart: any) {
+        chart.ctx.restore();
       },
     };
 
@@ -481,6 +496,21 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
         ctx.restore();
         ctx.restore();
       },
+
+      beforeDatasetsDraw(chart: any) {
+        const { ctx, chartArea } = chart;
+        const { top, left, width, height } = chartArea;
+        const radius = 15;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(left, top, width, height, radius);
+        ctx.clip();
+      },
+
+      afterDatasetsDraw(chart: any) {
+        chart.ctx.restore();
+      },
     };
 
     this.txChart = new Chart(ctx, {
@@ -691,4 +721,13 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
         return { x: new Date(hourBin.latestTs), y: hourBin.txCount };
       });
   }
+}
+function beforeDatasetsDraw(
+  chart: {
+    ctx: CanvasRenderingContext2D;
+    chartArea: { top: number; left: number; width: number; height: number };
+  },
+  any: any,
+) {
+  throw new Error('Function not implemented.');
 }

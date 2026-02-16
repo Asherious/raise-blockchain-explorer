@@ -40,7 +40,7 @@
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            stroke-width="1.5"
+            stroke-width="3"
             stroke="currentColor"
             class="size-4"
           >
@@ -61,7 +61,7 @@
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            stroke-width="1.5"
+            stroke-width="3"
             stroke="currentColor"
             class="size-4"
           >
@@ -118,8 +118,8 @@
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
+              stroke-width="3"
+              stroke="#65ae61"
               class="size-4 shrink-0 mt-0.5"
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -159,8 +159,8 @@
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
+              stroke-width="3"
+              stroke="#65ae61"
               class="size-4 shrink-0 mt-0.5"
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -200,8 +200,8 @@
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
+              stroke-width="3"
+              stroke="#65ae61"
               class="size-4 shrink-0 mt-0.5"
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -268,8 +268,8 @@
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke="#65ae61"
                       class="size-3 shrink-0 mt-0.5"
                     >
                       <path
@@ -312,16 +312,20 @@
               <ng-container *ngIf="txDetailsMap.has(txIds); else loading">
                 <div class="p-4 space-y-2 text-base">
                   <p>
-                    <strong>Pid:</strong>
-                    {{ txDetailsMap.get(txIds)?.key || '' }}
+                    <strong>Pid: </strong>
+                    <span class="text-gray-500">{{ txDetailsMap.get(txIds)?.key || '' }}</span>
                   </p>
                   <p>
-                    <strong>Hash:</strong>
-                    {{ txDetailsMap.get(txIds)?.asset?.hash || '' }}
+                    <strong>Hash: </strong>
+                    <span class="text-gray-500">{{
+                      txDetailsMap.get(txIds)?.asset?.hash || ''
+                    }}</span>
                   </p>
                   <p class="flex flex-wrap gap-1">
-                    <strong>Authors:</strong
-                    >{{ txDetailsMap.get(txIds)?.asset?.authors.join(', ') || '' }}
+                    <strong>Authors: </strong
+                    ><span class="text-gray-500">{{
+                      txDetailsMap.get(txIds)?.asset?.authors.join(', ') || ''
+                    }}</span>
                   </p>
                 </div>
               </ng-container>

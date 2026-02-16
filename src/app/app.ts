@@ -75,9 +75,22 @@ export class App {
 
       effect(() => {
         const isDark = this.darkMode();
+
         if (typeof document !== 'undefined') {
-          document.documentElement.classList.toggle('dark', isDark);
+          const root = document.documentElement;
+
+          // Disable transitions
+          root.classList.add('no-transition');
+
+          // Toggle dark mode
+          root.classList.toggle('dark', isDark);
+
+          // Re-enable transitions on next frame
+          requestAnimationFrame(() => {
+            root.classList.remove('no-transition');
+          });
         }
+
         try {
           localStorage.setItem('theme', isDark ? 'dark' : 'light');
         } catch {}
