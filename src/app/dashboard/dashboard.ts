@@ -9,10 +9,12 @@ import {
   PLATFORM_ID,
   ChangeDetectorRef,
   OnDestroy,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 import { FormatDatePipe } from '../format-date.pipe';
 import 'chartjs-adapter-date-fns';
 // Import Chart.js components
@@ -53,6 +55,7 @@ Chart.register(
   imports: [CommonModule, RouterLink, FormatDatePipe],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
   // X-axis tick placeholders
@@ -66,10 +69,15 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
   private isDarkMode: boolean = false;
 
   error: string | null = null;
+  isLoading: boolean = true;
 
   nodeList: any[] = [];
   blockList: any[] = [];
   chaincodeList: any[] = [];
+
+  get displayedBlocks(): any[] {
+    return this.blockList;
+  }
 
   get totalTransactions(): number {
     return this.blockList.reduce((sum, block) => sum + block.txCount, 0);
@@ -84,41 +92,36 @@ export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.fetchBlockData();
-      this.fetchNodeData();
-      this.fetchChaincodeData();
+      this.fetchAllData();
     }
   }
-  // Fetch block data from API
-  fetchBlockData() {
-    this.http.get<any[]>(`${environment.apiURL}/blocks`).subscribe({
+
+  // Fetch all data in parallel using forkJoin
+  fetchAllData() {
+    this.isLoading = true;
+
+    forkJoin({
+      blocks: this.http.get<any[]>(`${environment.apiURL}/blocks`),
+      nodes: this.http.get<any[]>(`${environment.apiURL}/nodes`),
+    }).subscribe({
       next: (data) => {
-        this.blockList = data;
-        // Sorting blocks
-        this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
-        setTimeout(() => {
-          this.initBlockChart();
-          this.initTransactionChart();
-          this.cdr.detectChanges();
-        }, 0);
+        // Process blocks - sort and store
+        this.blockList = data.blocks.sort((a, b) => parseInt(b.number) - parseInt(a.number));
+
+        // Store node and chaincode data
+        this.nodeList = data.nodes;
+
+        this.isLoading = false;
+        this.cdr.markForCheck();
+
+        // Initialize charts after data is loaded
+        this.initBlockChart();
+        this.initTransactionChart();
       },
-    });
-  }
-  //Fetch node data from API
-  fetchNodeData() {
-    this.http.get<any[]>(`${environment.apiURL}/nodes`).subscribe({
-      next: (data) => {
-        this.nodeList = data;
-        this.cdr.detectChanges();
-      },
-    });
-  }
-  //Fetch chaincode data from API
-  fetchChaincodeData() {
-    this.http.get<any[]>(`${environment.apiURL}/chaincodes`).subscribe({
-      next: (data) => {
-        this.chaincodeList = data;
-        this.cdr.detectChanges();
+      error: (err) => {
+        this.error = 'Failed to load dashboard data';
+        this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }

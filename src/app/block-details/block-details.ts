@@ -39,11 +39,22 @@ export class BlockDetails implements OnInit {
   private routeSub?: Subscription;
   // Subscribe to route params
   ngOnInit() {
-    // Fetch latest block number
-    this.blockService.getAllBlocks().subscribe({
-      next: (blocks: any[]) => {
-        if (blocks && blocks.length > 0) {
-          this.latestBlockNumber = Math.max(...blocks.map((b) => parseInt(b.number)));
+    // Try to get cached latest block number first
+    this.latestBlockNumber = this.blockService.getLatestBlockNumber();
+
+    // Also subscribe to updates
+    this.blockService.getLatestBlockNumberObservable().subscribe((num) => {
+      if (num > 0) {
+        this.latestBlockNumber = num;
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Fetch latest block number with caching - don't force refresh every time
+    this.blockService.fetchLatestBlockNumber().subscribe({
+      next: (num: number) => {
+        if (num > 0) {
+          this.latestBlockNumber = num;
         }
       },
     });
@@ -61,7 +72,24 @@ export class BlockDetails implements OnInit {
     this.routeSub?.unsubscribe();
   }
 
-  // Attempt to load block by number, then hash, then txid
+  // Determine the likely search type from the input format
+  private determineSearchType(id: string): 'number' | 'hash' | 'txid' | 'key' | 'unknown' {
+    // Check if it's a number
+    if (/^\d+$/.test(id)) {
+      return 'number';
+    }
+    // Check if it looks like a hex hash (64 chars for SHA-256)
+    if (/^[a-fA-F0-9]{64}$/.test(id)) {
+      return 'hash';
+    }
+    // Could be txid or key - these are typically longer hex strings
+    if (/^[a-fA-F0-9]+$/.test(id)) {
+      return 'txid';
+    }
+    return 'unknown';
+  }
+
+  // Attempt to load block - optimized to use cache first
   private async tryLoadBlock(id: string): Promise<void> {
     this.loading = true;
     this.error = null;
@@ -70,6 +98,32 @@ export class BlockDetails implements OnInit {
     this.txDetailsMap.clear();
     this.loadingTx.clear();
 
+    // Determine search type first to optimize lookup
+    const searchType = this.determineSearchType(id);
+
+    // Try cache-first approach
+    const cachedResult = this.blockService.searchBlock(id);
+
+    if (cachedResult.block) {
+      this.loadMethod = cachedResult.type || 'number';
+      this.block = cachedResult.block;
+      this.loading = false;
+
+      // If searching by txid or key, auto-expand the relevant transaction
+      if (searchType === 'txid' || cachedResult.type === 'txid') {
+        const txIdToFind = this.searchedId;
+        const index = this.block.txIds?.indexOf(txIdToFind);
+        if (index !== undefined && index !== -1) {
+          this.openSet.add(index);
+          this.loadTxDetails(txIdToFind);
+        }
+      }
+
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // If not found in cache, try API calls in order of likelihood
     const attempts = [
       { type: 'number' as const, call: () => this.blockService.getBlockByNumber(id) },
       { type: 'hash' as const, call: () => this.blockService.getBlockByDataHash(id) },
