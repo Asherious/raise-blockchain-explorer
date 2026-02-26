@@ -1,16 +1,22 @@
 <!-- Blocks -->
 <div>
+  <!-- Horizontal Scrollable Block List -->
   <div>
     <div
-      class="z-10 relative w-screen top-[55px] h-2 bg-[#e0e4e7] shadow-[inset_0px_3px_6px_#c8c8c8,inset_0px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_0px_3px_6px_#0000004d,inset_0px_-3px_6px_#ffffff14]"
+      class="z-10 relative w-full top-[55px] h-2 bg-[#e0e4e7] shadow-[inset_0px_3px_6px_#c8c8c8,inset_0px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[inset_0px_3px_6px_#0000004d,inset_0px_-3px_6px_#ffffff14]"
     ></div>
     <div
       #scrollContainer
-      class="cursor-pointer active:cursor-pointer! relative py-4 flex w-full overflow-x-auto scrollbar-hide"
+      class="select-none cursor-pointer active:cursor-pointer! relative py-4 flex w-full overflow-x-auto scrollbar-hide"
       (mousedown)="onMouseDown($event)"
     >
       <div *ngFor="let block of blockList" class="relative z-10">
-        <a [routerLink]="['/blocks', block.number]">
+        <a
+          [routerLink]="['/blocks', block.number]"
+          draggable="false"
+          (dragstart)="$event.preventDefault()"
+          (mousedown)="preventNavigation($event)"
+        >
           <div class="px-3 flex-row">
             <button
               class="relative cursor-pointer h-[70px] w-[70px] rounded-[10px] transition-transform duration-300 hover:scale-110 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
@@ -42,14 +48,14 @@
   >
     <!-- Header -->
     <div
-      class="mb-2 grid grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] px-4 md:px-8 items-center text-sm md:text-base font-medium"
+      class="mb-2 grid grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] px-4 md:px-8 items-center text-base font-medium"
     >
       <span>Block</span>
-      <span>Txs</span>
-      <span>Data Hash</span>
-      <span>Block Hash</span>
-      <span>Previous Hash</span>
-      <span class="text-right">Size</span>
+      <span class="hidden sm:block">Txs</span>
+      <span class="hidden sm:block">Data Hash</span>
+      <span class="hidden sm:block">Block Hash</span>
+      <span class="hidden sm:block">Previous Hash</span>
+      <span class="hidden sm:block text-right">Size</span>
     </div>
     <!-- Block List -->
     <div class="space-y-3">
@@ -68,7 +74,7 @@
           class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
         ></span>
         <div
-          class="relative z-10 grid grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] min-w-0 py-4 px-4 md:px-8 items-center text-sm transition-transform duration-300 ease-in-out group-hover:scale-[0.99]"
+          class="relative z-10 sm:grid sm:grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] min-w-0 py-4 px-4 md:px-8 items-center text-sm transition-transform duration-300 ease-in-out group-hover:scale-[0.99]"
         >
           <p class="font-medium text-lg text-left dark:text-[#7F8493]">
             {{ block.number }}
@@ -78,13 +84,19 @@
             {{ block.txCount }}
           </p>
 
-          <p class="text-gray-500 truncate min-w-0 text-left">{{ block.dataHash }}</p>
+          <p class="text-gray-500 truncate min-w-0 text-left">
+            {{ block.dataHash }}
+          </p>
 
-          <p class="text-gray-500 truncate min-w-0 text-left">{{ block.currentBlockHash }}</p>
+          <p class="text-gray-500 truncate min-w-0 text-left">
+            {{ block.currentBlockHash }}
+          </p>
 
-          <p class="text-gray-500 truncate min-w-0 text-left">{{ block.previousBlockHash }}</p>
+          <p class="text-gray-500 truncate min-w-0 text-left">
+            {{ block.previousBlockHash }}
+          </p>
 
-          <p class="text-gray-500 text-right">{{ block.size }} kB</p>
+          <p class="text-gray-500 sm:text-right">{{ block.size }} kB</p>
         </div>
       </a>
     </div>
@@ -94,15 +106,23 @@
       <button
         (click)="previousPage()"
         [disabled]="currentPage === 1"
-        class="cursor-pointer p-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] disabled:opacity-0 disabled:cursor-not-allowed transition-all hover:scale-105 hover:bg-[#e0e4e7] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:bg-[#24272C] hover:dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+        class="cursor-pointer relative p-2.5 rounded-full transition-all duration-300 ease-in-out group disabled:opacity-0"
       >
+        <!-- Normal Shadow -->
+        <span
+          class="absolute inset-0 rounded-full shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0"
+        ></span>
+        <!-- Inset Shadow -->
+        <span
+          class="absolute inset-0 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
+        ></span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="1.5"
+          stroke-width="2.5"
           stroke="currentColor"
-          class="size-4 dark:text-[#7F8493]"
+          class="size-4 dark:text-[#7F8493] transition-transform duration-300 ease-in-out group-hover:scale-[0.9]"
         >
           <path
             stroke-linecap="round"
@@ -116,32 +136,56 @@
       <button
         *ngFor="let page of visiblePages"
         (click)="goToPage(page)"
-        [class.bg-[#e0e4e7]]="currentPage === page"
-        [class.dark:bg-[#24272C]]="currentPage === page"
-        [class.shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff]]="
-          currentPage === page
-        "
-        [class.dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]]="
-          currentPage === page
-        "
-        class="cursor-pointer size-9 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-all hover:scale-105 hover:bg-[#e0e4e7] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:bg-[#24272C] hover:dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+        class="cursor-pointer relative size-9 rounded-full bg-[#e0e4e7] dark:bg-[#24272C] transition-all duration-300 ease-in-out group"
       >
-        <span class="text-sm dark:text-[#7F8493]">{{ page }}</span>
+        <!-- Normal Shadow -->
+        <span
+          class="absolute inset-0 rounded-full transition-opacity duration-300 ease-in-out"
+          [ngClass]="
+            currentPage === page
+              ? 'opacity-0'
+              : 'opacity-100 group-hover:opacity-0 shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]'
+          "
+        ></span>
+
+        <!-- Inset Shadow -->
+        <span
+          class="absolute inset-0 rounded-full transition-opacity duration-300 ease-in-out"
+          [ngClass]="
+            currentPage === page
+              ? 'opacity-100 shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]'
+              : 'opacity-0 group-hover:opacity-100 shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]'
+          "
+        ></span>
+
+        <div class="transition-transform duration-300 ease-in-out group-hover:scale-[0.9]">
+          <span class="text-sm dark:text-[#7F8493]">
+            {{ page }}
+          </span>
+        </div>
       </button>
 
       <!-- Next Page -->
       <button
         (click)="nextPage()"
         [disabled]="currentPage === totalPages"
-        class="cursor-pointer p-2.5 rounded-full bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] disabled:opacity-0 disabled:cursor-not-allowed transition-all hover:scale-105 hover:bg-[#e0e4e7] hover:shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] hover:dark:bg-[#24272C] hover:dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+        class="cursor-pointer relative p-2.5 rounded-full transition-all duration-300 ease-in-out group disabled:opacity-0"
       >
+        <!-- Normal Shadow -->
+        <span
+          class="absolute inset-0 rounded-full shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0"
+        ></span>
+        <!-- Inset Shadow -->
+        <span
+          class="absolute inset-0 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
+        ></span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="1.5"
+          stroke-width="2.5"
           stroke="currentColor"
-          class="size-4 dark:text-[#7F8493]"
+          class="size-4 dark:text-[#7F8493] transition-transform duration-300 ease-in-out group-hover:scale-[0.9]"
         >
           <path
             stroke-linecap="round"

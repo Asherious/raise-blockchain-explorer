@@ -6,7 +6,7 @@
       class="px-1 pt-2 pb-1 h-[282px] 2xl:h-[452px] text-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
     >
       <div class="grid grid-cols-2 items-center font-medium">
-        <span>Peer</span>
+        <span>Nodes</span>
         <span>Status</span>
       </div>
       <div
@@ -16,7 +16,7 @@
           <div
             class="py-[25px] 2xl:py-[33.5px] grid grid-cols-2 place-items-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[10px]"
           >
-            <span>{{ node.name }}:{{ node.port }}</span>
+            <span class="block w-full truncate pl-8 sm:pl-0">{{ node.name }}:{{ node.port }}</span>
             <span
               class="w-4 h-4 rounded-full"
               [ngClass]="{

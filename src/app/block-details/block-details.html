@@ -33,16 +33,24 @@
         <!-- Previous Block -->
         <button
           *ngIf="block && +block.number > 0"
-          class="cursor-pointer p-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-full"
+          class="cursor-pointer relative p-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
           (click)="goToPreviousBlock()"
         >
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-full shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
+          ></span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            stroke-width="3"
+            stroke-width="2.5"
             stroke="currentColor"
-            class="size-4"
+            class="size-4 transition-transform duration-300 ease-in-out group-hover:scale-[0.9]"
           >
             <path
               stroke-linecap="round"
@@ -54,16 +62,24 @@
         <!-- Next Block -->
         <button
           *ngIf="block && +block.number < latestBlockNumber"
-          class="cursor-pointer p-2 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-full"
+          class="cursor-pointer relative p-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
           (click)="goToNextBlock()"
         >
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-full shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
+          ></span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            stroke-width="3"
+            stroke-width="2.5"
             stroke="currentColor"
-            class="size-4"
+            class="size-4 transition-transform duration-300 ease-in-out group-hover:scale-[0.9]"
           >
             <path
               stroke-linecap="round"

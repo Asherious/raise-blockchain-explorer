@@ -19,7 +19,7 @@ import { BlockService } from '../block.service';
   templateUrl: './blocks.html',
   styleUrls: ['./blocks.css'],
 })
-export class BLOCKS implements OnInit, AfterViewInit {
+export class Blocks implements OnInit, AfterViewInit {
   // X-axis tick placeholders
   ticks = Array.from({ length: 9 });
   // API + BlockService
@@ -44,8 +44,11 @@ export class BLOCKS implements OnInit, AfterViewInit {
   // Drag-to-scroll
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
   private isDragging = false;
+  private isMouseDown = false;
   private startX = 0;
   private scrollLeft = 0;
+  private dragThreshold = 5;
+  private totalMovement = 0;
 
   // Track open/closed state for transactions
   openTx: boolean[] = [];
@@ -84,36 +87,60 @@ export class BLOCKS implements OnInit, AfterViewInit {
   toggleTx(index: number) {
     this.openTx[index] = !this.openTx[index];
   }
+  // Mouse down event to initiate dragging
+  onMouseDown(e: MouseEvent): void {
+    if (!this.scrollContainer) return;
 
-  @HostListener('document:mouseup', ['$event'])
-  onMouseUp(e: MouseEvent): void {
-    if (this.isDragging) {
-      this.isDragging = false;
-      this.scrollContainer.nativeElement.classList.remove('cursor-grabbing');
-    }
+    this.isMouseDown = true;
+    this.isDragging = false;
+
+    const container = this.scrollContainer.nativeElement;
+    this.startX = e.pageX - container.offsetLeft;
+    this.scrollLeft = container.scrollLeft;
   }
-
+  // Mouse move event for drag-to-scroll
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(e: MouseEvent): void {
-    if (!this.isDragging || !this.scrollContainer) return;
-    e.preventDefault();
-    const x = e.pageX - this.scrollContainer.nativeElement.offsetLeft;
-    const walk = (x - this.startX) * 1;
-    this.scrollContainer.nativeElement.scrollLeft = this.scrollLeft - walk;
+    if (!this.isMouseDown || !this.scrollContainer) return;
+
+    const container = this.scrollContainer.nativeElement;
+    const x = e.pageX - container.offsetLeft;
+    const walk = x - this.startX;
+
+    this.totalMovement = Math.abs(walk);
+
+    if (this.totalMovement > this.dragThreshold) {
+      this.isDragging = true;
+    }
+
+    if (this.isDragging) {
+      e.preventDefault();
+      container.scrollLeft = this.scrollLeft - walk;
+    }
+  }
+  // Mouse up event to end dragging
+  @HostListener('document:mouseup')
+  onMouseUp(): void {
+    this.isMouseDown = false;
+
+    // Delay reset so click handler can still read movement
+    setTimeout(() => {
+      this.isDragging = false;
+      this.totalMovement = 0;
+    }, 0);
+  }
+  // Prevent click events when dragging
+  preventNavigation(event: MouseEvent) {
+    if (this.totalMovement > this.dragThreshold) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
   }
   // Pagination functionality
   constructor() {
     this.calculatePaginationDetails();
     this.updatePaginatedList();
     this.calculateVisiblePages();
-  }
-  // Mouse down event to initiate dragging
-  onMouseDown(e: MouseEvent): void {
-    if (!this.scrollContainer) return;
-    this.isDragging = true;
-    this.scrollContainer.nativeElement.classList.add('cursor-grabbing');
-    this.startX = e.pageX - this.scrollContainer.nativeElement.offsetLeft;
-    this.scrollLeft = this.scrollContainer.nativeElement.scrollLeft;
   }
   // Pagination methods
   calculatePaginationDetails(): void {

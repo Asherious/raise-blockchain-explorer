@@ -33,7 +33,6 @@ import {
   Filler,
 } from 'chart.js';
 import { environment } from '../../environment/environment';
-import { before } from 'node:test';
 
 Chart.register(
   LineController,
@@ -57,7 +56,7 @@ Chart.register(
   styleUrls: ['./dashboard.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DASHBOARD implements OnInit, AfterViewInit, OnDestroy {
+export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   // X-axis tick placeholders
   ticks = Array.from({ length: 9 });
 

@@ -1,14 +1,12 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, shareReplay, BehaviorSubject } from 'rxjs';
-import { timeout } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BlockService {
-  // Replace mock data with actual API endpoint
   private apiUrl = 'http://localhost:3000';
 
   // Cache for blocks data
