@@ -2,7 +2,7 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { BlockService } from '../block.service';
+import { AppService } from '../app.service';
 import { FormatDatePipe } from '../format-date.pipe';
 import { Subscription } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class BlockDetails implements OnInit {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private blockService = inject(BlockService);
+  private appService = inject(AppService);
   private cdr = inject(ChangeDetectorRef);
 
   block?: any;
@@ -40,10 +40,10 @@ export class BlockDetails implements OnInit {
   // Subscribe to route params
   ngOnInit() {
     // Try to get cached latest block number first
-    this.latestBlockNumber = this.blockService.getLatestBlockNumber();
+    this.latestBlockNumber = this.appService.getLatestBlockNumber();
 
     // Also subscribe to updates
-    this.blockService.getLatestBlockNumberObservable().subscribe((num) => {
+    this.appService.getLatestBlockNumberObservable().subscribe((num) => {
       if (num > 0) {
         this.latestBlockNumber = num;
         this.cdr.detectChanges();
@@ -51,7 +51,7 @@ export class BlockDetails implements OnInit {
     });
 
     // Fetch latest block number with caching - don't force refresh every time
-    this.blockService.fetchLatestBlockNumber().subscribe({
+    this.appService.fetchLatestBlockNumber().subscribe({
       next: (num: number) => {
         if (num > 0) {
           this.latestBlockNumber = num;
@@ -102,7 +102,7 @@ export class BlockDetails implements OnInit {
     const searchType = this.determineSearchType(id);
 
     // Try cache-first approach
-    const cachedResult = this.blockService.searchBlock(id);
+    const cachedResult = this.appService.searchBlock(id);
 
     if (cachedResult.block) {
       this.loadMethod = cachedResult.type || 'number';
@@ -125,12 +125,12 @@ export class BlockDetails implements OnInit {
 
     // If not found in cache, try API calls in order of likelihood
     const attempts = [
-      { type: 'number' as const, call: () => this.blockService.getBlockByNumber(id) },
-      { type: 'hash' as const, call: () => this.blockService.getBlockByDataHash(id) },
-      { type: 'hash' as const, call: () => this.blockService.getBlockByCurrentBlockHash(id) },
-      { type: 'hash' as const, call: () => this.blockService.getPreviousBlockHash(id) },
-      { type: 'txid' as const, call: () => this.blockService.getBlockByTxId(id) },
-      { type: 'key' as const, call: () => this.blockService.getBlockByKey(id) },
+      { type: 'number' as const, call: () => this.appService.getBlockByNumber(id) },
+      { type: 'hash' as const, call: () => this.appService.getBlockByDataHash(id) },
+      { type: 'hash' as const, call: () => this.appService.getBlockByCurrentBlockHash(id) },
+      { type: 'hash' as const, call: () => this.appService.getPreviousBlockHash(id) },
+      { type: 'txid' as const, call: () => this.appService.getBlockByTxId(id) },
+      { type: 'key' as const, call: () => this.appService.getBlockByKey(id) },
     ];
 
     try {
@@ -144,7 +144,7 @@ export class BlockDetails implements OnInit {
           // Special handling for key search: getBlockByKey returns a txId, need to find the block
           if (attempt.type === 'key' && data) {
             foundTxId = data; // Save the txId found by key search
-            data = await firstValueFrom(this.blockService.getBlockByTxId(data));
+            data = await firstValueFrom(this.appService.getBlockByTxId(data));
           } else if (attempt.type === 'txid') {
             foundTxId = this.searchedId;
           }
@@ -189,7 +189,7 @@ export class BlockDetails implements OnInit {
 
     this.loadingTx.add(txId);
 
-    this.blockService.getBlockTxDetails(txId).subscribe({
+    this.appService.getBlockTxDetails(txId).subscribe({
       next: (txData) => {
         if (!txData || !txData.asset) {
           this.txDetailsMap.set(txId, null);

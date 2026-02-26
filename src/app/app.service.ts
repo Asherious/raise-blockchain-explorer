@@ -6,7 +6,7 @@ import { isPlatformBrowser } from '@angular/common';
 @Injectable({
   providedIn: 'root',
 })
-export class BlockService {
+export class AppService {
   private apiUrl = 'http://localhost:3000';
 
   // Cache for blocks data

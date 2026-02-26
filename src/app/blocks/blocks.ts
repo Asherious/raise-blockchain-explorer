@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { BlockService } from '../block.service';
+import { AppService } from '../app.service';
 
 @Component({
   selector: 'app-blocks',
@@ -22,8 +22,8 @@ import { BlockService } from '../block.service';
 export class Blocks implements OnInit, AfterViewInit {
   // X-axis tick placeholders
   ticks = Array.from({ length: 9 });
-  // API + BlockService
-  private blockService: BlockService = inject(BlockService);
+  // API + AppService
+  private appService: AppService = inject(AppService);
 
   // Full block list and paginated view
   blockList: any[] = [];
@@ -66,7 +66,7 @@ export class Blocks implements OnInit, AfterViewInit {
   private cdr = inject(ChangeDetectorRef);
 
   fetchBlockData() {
-    this.blockService.getAllBlocks().subscribe({
+    this.appService.getAllBlocks().subscribe({
       next: (data) => {
         this.blockList = data;
         this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
