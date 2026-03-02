@@ -1,10 +1,10 @@
 <div
   *ngIf="!loading && !error && block; else loadingOrError"
-  class="mx-6 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6 relative"
+  class="mx-6 mb-6 flex flex-col md:flex-row gap-6 relative"
 >
   <!-- Block Info -->
   <div
-    class="bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
+    class="self-start flex-1 flex flex-col bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
   >
     <div class="relative px-6 pt-6 flex justify-between items-start">
       <div class="flex-row">
@@ -29,6 +29,7 @@
           Block {{ block.number }}
         </p>
       </div>
+      <!-- Navigation Buttons -->
       <div class="flex flex-row gap-4">
         <!-- Previous Block -->
         <button
@@ -92,151 +93,147 @@
     </div>
     <!-- Block Details -->
     <div
-      class="m-3 p-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[10px]"
+      class="m-3 p-3 text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[10px]"
     >
-      <p class="mb-3 text-lg font-medium"><strong>Details</strong></p>
+      <p>
+        <strong>Txs: </strong>
+        <span class="text-gray-500">{{ block.txCount }}</span>
+      </p>
+      <p class="flex items-start gap-2 max-w-full">
+        <span class="shrink-0"><strong>Data Hash: </strong></span>
 
-      <div class="text-base">
-        <p>
-          <strong>Txs: </strong>
-          <span class="text-gray-500">{{ block.txCount }}</span>
-        </p>
-        <p class="flex items-start gap-2 max-w-full">
-          <span class="shrink-0"><strong>Data Hash: </strong></span>
-
-          <button
-            class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
-            (click)="copy(block.dataHash)"
+        <button
+          class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
+          (click)="copy(block.dataHash)"
+        >
+          <span
+            class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
           >
-            <span
-              class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
-            >
-              {{ block.dataHash }}
-            </span>
-            <!-- Copy icon -->
-            <svg
-              *ngIf="copied !== block.dataHash"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="size-4 shrink-0 mt-0.5"
-            >
-              <path
-                d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
-              />
-              <path
-                d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
-              />
-            </svg>
-            <!-- Copied icon -->
-            <svg
-              *ngIf="copied === block.dataHash"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#65ae61"
-              class="size-4 shrink-0 mt-0.5"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-          </button>
-        </p>
-        <p class="flex items-start gap-2 max-w-full">
-          <span class="shrink-0"><strong>Block Hash:</strong></span>
-
-          <button
-            class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
-            (click)="copy(block.currentBlockHash)"
+            {{ block.dataHash }}
+          </span>
+          <!-- Copy icon -->
+          <svg
+            *ngIf="copied !== block.dataHash"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="size-4 shrink-0 mt-0.5"
           >
-            <span
-              class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
-            >
-              {{ block.currentBlockHash }}
-            </span>
-            <!-- Copy icon -->
-            <svg
-              *ngIf="copied !== block.currentBlockHash"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="size-4 shrink-0 mt-0.5"
-            >
-              <path
-                d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
-              />
-              <path
-                d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
-              />
-            </svg>
-            <!-- Copied icon -->
-            <svg
-              *ngIf="copied === block.currentBlockHash"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#65ae61"
-              class="size-4 shrink-0 mt-0.5"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-          </button>
-        </p>
-        <p class="flex items-start gap-2 max-w-full">
-          <span class="shrink-0"><strong>Previous Hash:</strong></span>
-
-          <button
-            class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
-            (click)="copy(block.previousBlockHash)"
+            <path
+              d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
+            />
+            <path
+              d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
+            />
+          </svg>
+          <!-- Copied icon -->
+          <svg
+            *ngIf="copied === block.dataHash"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="#65ae61"
+            class="size-4 shrink-0 mt-0.5"
           >
-            <span
-              class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
-            >
-              {{ block.previousBlockHash }}
-            </span>
-            <!-- Copy icon -->
-            <svg
-              *ngIf="copied !== block.previousBlockHash"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="size-4 shrink-0 mt-0.5"
-            >
-              <path
-                d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
-              />
-              <path
-                d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
-              />
-            </svg>
-            <!-- Copied icon -->
-            <svg
-              *ngIf="copied === block.previousBlockHash"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#65ae61"
-              class="size-4 shrink-0 mt-0.5"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-          </button>
-        </p>
-        <p>
-          <strong>Size: </strong> <span class="text-gray-500">{{ block.size }} kB</span>
-        </p>
-        <p>
-          <strong>Timestamp: </strong>
-          <span class="text-gray-500">{{ block.timestamp | formatDate }}</span>
-        </p>
-      </div>
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </button>
+      </p>
+      <p class="flex items-start gap-2 max-w-full">
+        <span class="shrink-0"><strong>Block Hash:</strong></span>
+
+        <button
+          class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
+          (click)="copy(block.currentBlockHash)"
+        >
+          <span
+            class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
+          >
+            {{ block.currentBlockHash }}
+          </span>
+          <!-- Copy icon -->
+          <svg
+            *ngIf="copied !== block.currentBlockHash"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="size-4 shrink-0 mt-0.5"
+          >
+            <path
+              d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
+            />
+            <path
+              d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
+            />
+          </svg>
+          <!-- Copied icon -->
+          <svg
+            *ngIf="copied === block.currentBlockHash"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="#65ae61"
+            class="size-4 shrink-0 mt-0.5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </button>
+      </p>
+      <p class="flex items-start gap-2 max-w-full">
+        <span class="shrink-0"><strong>Previous Block Hash:</strong></span>
+
+        <button
+          class="cursor-pointer flex items-start text-gray-500 hover:font-bold max-w-full overflow-hidden"
+          (click)="copy(block.previousBlockHash)"
+        >
+          <span
+            class="text-left block max-w-full whitespace-normal break-all overflow-hidden line-clamp-3"
+          >
+            {{ block.previousBlockHash }}
+          </span>
+          <!-- Copy icon -->
+          <svg
+            *ngIf="copied !== block.previousBlockHash"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="size-4 shrink-0 mt-0.5"
+          >
+            <path
+              d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
+            />
+            <path
+              d="M18 7.5a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3H18Z"
+            />
+          </svg>
+          <!-- Copied icon -->
+          <svg
+            *ngIf="copied === block.previousBlockHash"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="#65ae61"
+            class="size-4 shrink-0 mt-0.5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </button>
+      </p>
+      <p>
+        <strong>Size: </strong> <span class="text-gray-500">{{ block.size }} kB</span>
+      </p>
+      <p>
+        <strong>Timestamp: </strong>
+        <span class="text-gray-500">{{ block.timestamp | formatDate }}</span>
+      </p>
     </div>
   </div>
   <!-- Transactions -->
   <div
-    class="px-3 pt-2 pb-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
+    class="flex-1 px-3 pt-2 pb-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
   >
     <p class="text-center text-base font-medium dark:text-[#7F8493] pb-2">Transactions</p>
     <div class="space-y-3">
@@ -328,7 +325,7 @@
               <ng-container *ngIf="txDetailsMap.has(txIds); else loading">
                 <div class="p-4 space-y-2 text-base">
                   <p>
-                    <strong>Pid: </strong>
+                    <strong>PID: </strong>
                     <span class="text-gray-500">{{ txDetailsMap.get(txIds)?.key || '' }}</span>
                   </p>
                   <p>

@@ -7,17 +7,16 @@
     ></div>
     <div
       #scrollContainer
-      class="select-none cursor-pointer active:cursor-pointer! relative py-4 flex w-full overflow-x-auto scrollbar-hide"
+      class="cursor-pointer active:cursor-pointer! relative py-4 flex w-full overflow-x-auto scrollbar-hide"
       (mousedown)="onMouseDown($event)"
     >
       <div *ngFor="let block of blockList" class="relative z-10">
-        <a
-          [routerLink]="['/blocks', block.number]"
-          draggable="false"
-          (dragstart)="$event.preventDefault()"
-          (mousedown)="preventNavigation($event)"
-        >
-          <div class="px-3 flex-row">
+        <a [routerLink]="['/blocks', block.number]" draggable="false">
+          <div
+            class="px-3 flex-row"
+            (dragstart)="$event.preventDefault()"
+            (click)="onBlockClick($event)"
+          >
             <button
               class="relative cursor-pointer h-[70px] w-[70px] rounded-[10px] transition-transform duration-300 hover:scale-110 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
             >
@@ -47,15 +46,15 @@
     class="mx-6 mb-6 px-3 pt-2 pb-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
   >
     <!-- Header -->
-    <div
-      class="mb-2 grid grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] px-4 md:px-8 items-center text-base font-medium"
-    >
-      <span>Block</span>
-      <span class="hidden sm:block">Txs</span>
-      <span class="hidden sm:block">Data Hash</span>
-      <span class="hidden sm:block">Block Hash</span>
-      <span class="hidden sm:block">Previous Hash</span>
+    <div class="hidden mb-2 sm:grid grid-cols-5 px-4 items-center text-base font-medium">
+      <span class="hidden sm:block">Block</span>
+      <span class="hidden sm:block">Transactions</span>
+      <span class="hidden sm:block text-center">Block Hash</span>
+      <span class="hidden sm:block text-right mr-8">Timestamp</span>
       <span class="hidden sm:block text-right">Size</span>
+    </div>
+    <div class="mb-2 px-4 items-center text-base font-medium">
+      <span class="block sm:hidden text-center">Blocks</span>
     </div>
     <!-- Block List -->
     <div class="space-y-3">
@@ -74,27 +73,21 @@
           class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
         ></span>
         <div
-          class="relative z-10 sm:grid sm:grid-cols-[0.3fr_0.3fr_2fr_2fr_2fr_0.3fr] min-w-0 py-4 px-4 md:px-8 items-center text-sm transition-transform duration-300 ease-in-out group-hover:scale-[0.99]"
+          class="relative z-10 sm:grid sm:grid-cols-5 p-4 items-center text-sm transition-transform duration-300 ease-in-out group-hover:scale-[0.99]"
         >
-          <p class="font-medium text-lg text-left dark:text-[#7F8493]">
+          <p class="font-medium text-lg dark:text-[#7F8493] ml-2">
             {{ block.number }}
           </p>
 
-          <p class="text-gray-500 text-left">
+          <p class="text-gray-500 sm:ml-12">
             {{ block.txCount }}
           </p>
 
-          <p class="text-gray-500 truncate min-w-0 text-left">
-            {{ block.dataHash }}
-          </p>
-
-          <p class="text-gray-500 truncate min-w-0 text-left">
+          <p class="text-gray-500 truncate max-w-100 text-center">
             {{ block.currentBlockHash }}
           </p>
 
-          <p class="text-gray-500 truncate min-w-0 text-left">
-            {{ block.previousBlockHash }}
-          </p>
+          <p class="text-gray-500 sm:text-right">{{ block.timestamp | formatDate }}</p>
 
           <p class="text-gray-500 sm:text-right">{{ block.size }} kB</p>
         </div>

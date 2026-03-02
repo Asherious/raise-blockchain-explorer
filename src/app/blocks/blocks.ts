@@ -11,11 +11,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppService } from '../app.service';
+import { FormatDatePipe } from '../format-date.pipe';
 
 @Component({
   selector: 'app-blocks',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormatDatePipe],
   templateUrl: './blocks.html',
   styleUrls: ['./blocks.css'],
 })
@@ -121,20 +122,25 @@ export class Blocks implements OnInit, AfterViewInit {
   // Mouse up event to end dragging
   @HostListener('document:mouseup')
   onMouseUp(): void {
+    if (!this.isMouseDown) return;
+
     this.isMouseDown = false;
 
     // Delay reset so click handler can still read movement
+    // We'll reset after a longer delay to allow click event to fire first
     setTimeout(() => {
       this.isDragging = false;
       this.totalMovement = 0;
-    }, 0);
+    }, 100);
   }
-  // Prevent click events when dragging
-  preventNavigation(event: MouseEvent) {
-    if (this.totalMovement > this.dragThreshold) {
+  // Handle click to prevent navigation when dragging
+  onBlockClick(event: MouseEvent): boolean {
+    if (this.isDragging || this.totalMovement > this.dragThreshold) {
       event.preventDefault();
       event.stopImmediatePropagation();
+      return false;
     }
+    return true;
   }
   // Pagination functionality
   constructor() {
