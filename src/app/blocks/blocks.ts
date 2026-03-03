@@ -71,6 +71,7 @@ export class Blocks implements OnInit, AfterViewInit {
       next: (data) => {
         this.blockList = data;
         this.blockList.sort((a, b) => parseInt(b.number) - parseInt(a.number));
+        //this.addRandomTransactionsToBlocks();
         this.openTx = data.map(() => false);
         this.calculatePaginationDetails();
         this.calculateVisiblePages();
@@ -195,4 +196,46 @@ export class Blocks implements OnInit, AfterViewInit {
   copy(value: string) {
     navigator.clipboard.writeText(value);
   }
+  /*
+  private generateRandomTransaction() {
+    return {
+      hash: Math.random().toString(36).substring(2, 12), // random hash
+      value: (Math.random() * 10).toFixed(2), // random value
+    };
+  }
+  private addRandomTransactionsToBlocks() {
+    Object.entries(this.blocksToAddTx).forEach(([blockNumberStr, txCount]) => {
+      const blockNumber = parseInt(blockNumberStr);
+      const block = this.blockList.find((b) => parseInt(b.number) === blockNumber);
+      if (!block) return;
+
+      if (!block.transactions) {
+        block.transactions = [];
+      }
+
+      for (let i = 0; i < txCount; i++) {
+        block.transactions.push(this.generateRandomTransaction());
+      }
+
+      // Update txCount if used in UI
+      block.txCount = block.transactions.length;
+    });
+  }
+  private blocksToAddTx: { [blockNumber: number]: number } = {
+    110: 3,
+    109: 4,
+    108: 7,
+    107: 5,
+    106: 10,
+    105: 6,
+    104: 2,
+    103: 4,
+    102: 8,
+    101: 3,
+    100: 9,
+    99: 5,
+    98: 7,
+    97: 4,
+    96: 8,
+  };*/
 }

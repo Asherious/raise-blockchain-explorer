@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, ChangeDetectorRef, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AppService } from '../app.service';
@@ -24,6 +24,8 @@ export class BlockDetails implements OnInit {
   private appService = inject(AppService);
   private cdr = inject(ChangeDetectorRef);
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
   block?: any;
   loading = false;
   error: string | null = null;
@@ -36,9 +38,17 @@ export class BlockDetails implements OnInit {
   searchedId: string = '';
   loadMethod: 'number' | 'hash' | 'txid' | 'key' = 'number';
 
+  // Track previous ID to skip reloading same block
+  private previousId: string = '';
+
   private routeSub?: Subscription;
   // Subscribe to route params
   ngOnInit() {
+    // Only run in browser - SSR will skip this entirely
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     // Try to get cached latest block number first
     this.latestBlockNumber = this.appService.getLatestBlockNumber();
 
@@ -61,9 +71,23 @@ export class BlockDetails implements OnInit {
 
     this.routeSub = this.route.paramMap.subscribe(async (paramMap) => {
       const id = paramMap.get('blockNumber') ?? '';
+
+      // Skip if same ID to avoid unnecessary reload
+      if (id === this.previousId) {
+        return;
+      }
+
       if (!id) return;
 
+      this.previousId = id;
       this.searchedId = id;
+
+      // Ensure blocks are loaded before searching
+      // This fixes cache miss on direct URL navigation
+      if (!this.appService.hasBlocksCache()) {
+        await firstValueFrom(this.appService.getAllBlocks());
+      }
+
       await this.tryLoadBlock(id);
     });
   }
@@ -99,7 +123,7 @@ export class BlockDetails implements OnInit {
     this.loadingTx.clear();
 
     // Determine search type first to optimize lookup
-    const searchType = this.determineSearchType(id);
+    let searchType = this.determineSearchType(id);
 
     // Try cache-first approach
     const cachedResult = this.appService.searchBlock(id);
@@ -123,54 +147,95 @@ export class BlockDetails implements OnInit {
       return;
     }
 
-    // If not found in cache, try API calls in order of likelihood
-    const attempts = [
-      { type: 'number' as const, call: () => this.appService.getBlockByNumber(id) },
-      { type: 'hash' as const, call: () => this.appService.getBlockByDataHash(id) },
-      { type: 'hash' as const, call: () => this.appService.getBlockByCurrentBlockHash(id) },
-      { type: 'hash' as const, call: () => this.appService.getPreviousBlockHash(id) },
-      { type: 'txid' as const, call: () => this.appService.getBlockByTxId(id) },
-      { type: 'key' as const, call: () => this.appService.getBlockByKey(id) },
-    ];
-
-    try {
-      let found = false;
-      let foundTxId: string | null = null;
-
-      for (const attempt of attempts) {
-        try {
-          let data = await firstValueFrom(attempt.call());
-
-          // Special handling for key search: getBlockByKey returns a txId, need to find the block
-          if (attempt.type === 'key' && data) {
-            foundTxId = data; // Save the txId found by key search
-            data = await firstValueFrom(this.appService.getBlockByTxId(data));
-          } else if (attempt.type === 'txid') {
-            foundTxId = this.searchedId;
-          }
-
-          if (data?.number) {
-            this.loadMethod = attempt.type;
-            this.block = data;
-            this.openSet.clear();
-
-            if (attempt.type === 'txid' || attempt.type === 'key') {
-              const txIdToFind = foundTxId || this.searchedId;
-              const index = this.block.txIds?.indexOf(txIdToFind);
-              if (index !== undefined && index !== -1) {
-                this.openSet.add(index);
-                this.loadTxDetails(txIdToFind);
-              }
-            }
-            found = true;
-            break;
-          }
-        } catch (innerErr) {
-          console.error(`Failed to load block by ${attempt.type}:`, innerErr);
+    // Try to search by key (keys are alphanumeric and may be misidentified as txid)
+    // Use the dedicated searchBlockByKey method
+    const keyResult = await firstValueFrom(this.appService.searchBlockByKey(id));
+    if (keyResult.block) {
+      this.loadMethod = 'key';
+      this.block = keyResult.block;
+      this.loading = false;
+      // Auto-expand the transaction for key search
+      // First get the txId from the key, then find it in the block
+      const txIdFromKey = await firstValueFrom(this.appService.getBlockByKey(id));
+      if (txIdFromKey) {
+        const index = this.block.txIds?.indexOf(txIdFromKey);
+        if (index !== undefined && index !== -1) {
+          this.openSet.add(index);
+          this.loadTxDetails(txIdFromKey);
         }
       }
+      this.cdr.detectChanges();
+      return;
+    }
 
-      if (!found) {
+    // If not found in cache, use the determined search type for direct API call
+    // This is faster than iterating through all attempt types sequentially
+    let data = null;
+
+    try {
+      switch (searchType) {
+        case 'number':
+          data = await firstValueFrom(this.appService.getBlockByNumber(id));
+          this.loadMethod = 'number';
+          break;
+        case 'hash':
+          // Try data hash first, then current block hash in parallel
+          const [byDataHash, byCurrentHash, byPreviousHash] = await Promise.all([
+            firstValueFrom(this.appService.getBlockByDataHash(id)),
+            firstValueFrom(this.appService.getBlockByCurrentBlockHash(id)),
+            firstValueFrom(this.appService.getBlockByPreviousBlockHash(id)),
+          ]);
+          data = byDataHash || byCurrentHash || byPreviousHash;
+          this.loadMethod = 'hash';
+          break;
+        case 'txid':
+          data = await firstValueFrom(this.appService.getBlockByTxId(id));
+          if (!data?.number) {
+            const txIdFromKey = await firstValueFrom(this.appService.getBlockByKey(id));
+            if (txIdFromKey) {
+              data = await firstValueFrom(this.appService.getBlockByTxId(txIdFromKey));
+              searchType = 'key'; // Update searchType for auto-expand logic
+            }
+          }
+          this.loadMethod = 'txid';
+          break;
+        case 'key':
+          const txId = await firstValueFrom(this.appService.getBlockByKey(id));
+          if (txId) {
+            data = await firstValueFrom(this.appService.getBlockByTxId(txId));
+          }
+          this.loadMethod = 'key';
+          break;
+        default:
+          // For unknown types, try number first then hash
+          data = await firstValueFrom(this.appService.getBlockByNumber(id));
+          if (!data?.number) {
+            const [byDataHash, byCurrentHash] = await Promise.all([
+              firstValueFrom(this.appService.getBlockByDataHash(id)),
+              firstValueFrom(this.appService.getBlockByCurrentBlockHash(id)),
+            ]);
+            data = byDataHash || byCurrentHash;
+          }
+          break;
+      }
+
+      if (data?.number) {
+        this.block = data;
+        this.openSet.clear();
+
+        // Auto-expand the relevant transaction for txid/key searches
+        if (searchType === 'txid') {
+          const txIdToFind =
+            searchType === 'txid'
+              ? this.searchedId
+              : await firstValueFrom(this.appService.getBlockByKey(this.searchedId));
+          const index = this.block.txIds?.indexOf(txIdToFind);
+          if (index !== undefined && index !== -1) {
+            this.openSet.add(index);
+            this.loadTxDetails(txIdToFind);
+          }
+        }
+      } else {
         this.block = null;
         this.loadingTx.clear();
         this.openSet.clear();

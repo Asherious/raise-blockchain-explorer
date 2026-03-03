@@ -78,7 +78,15 @@
                 <p
                   class="text-xs 2xl:text-sm text-gray-500 truncate whitespace-nowrap text-ellipsis"
                 >
-                  Data Hash: {{ block.dataHash }}
+                  Data Hash:
+                  <span
+                    style="
+                      font-family:
+                        Space Mono,
+                        monospace;
+                    "
+                    >{{ block.dataHash }}</span
+                  >
                 </p>
                 <p class="text-xs 2xl:text-sm text-gray-500">Transactions: {{ block.txCount }}</p>
                 <p class="text-xs 2xl:text-sm text-gray-500">{{ block.timestamp | formatDate }}</p>

@@ -46,15 +46,17 @@
     class="mx-6 mb-6 px-3 pt-2 pb-3 bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
   >
     <!-- Header -->
-    <div class="hidden mb-2 sm:grid grid-cols-5 px-4 items-center text-base font-medium">
+    <div
+      class="hidden mb-2 sm:grid grid-cols-[1fr_4fr_2fr_2fr_1fr] px-4 items-center text-base font-medium"
+    >
       <span class="hidden sm:block">Block</span>
-      <span class="hidden sm:block">Transactions</span>
-      <span class="hidden sm:block text-center">Block Hash</span>
-      <span class="hidden sm:block text-right mr-8">Timestamp</span>
+      <span class="hidden sm:block text-center">Data Hash</span>
+      <span class="hidden sm:block text-center">Transactions</span>
+      <span class="hidden sm:block text-center">Timestamp</span>
       <span class="hidden sm:block text-right">Size</span>
     </div>
-    <div class="mb-2 px-4 items-center text-base font-medium">
-      <span class="block sm:hidden text-center">Blocks</span>
+    <div class="block sm:hidden mb-2 px-4 items-center text-base font-medium text-center">
+      <span>Blocks</span>
     </div>
     <!-- Block List -->
     <div class="space-y-3">
@@ -73,21 +75,28 @@
           class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
         ></span>
         <div
-          class="relative z-10 sm:grid sm:grid-cols-5 p-4 items-center text-sm transition-transform duration-300 ease-in-out group-hover:scale-[0.99]"
+          class="relative z-10 sm:grid sm:grid-cols-[1fr_4fr_2fr_2fr_1fr] p-4 items-center text-sm transition-transform duration-300 ease-in-out group-hover:scale-[0.99]"
         >
-          <p class="font-medium text-lg dark:text-[#7F8493] ml-2">
+          <p class="font-medium text-lg dark:text-[#7F8493] sm:ml-2">
             {{ block.number }}
           </p>
 
-          <p class="text-gray-500 sm:ml-12">
+          <p
+            class="text-gray-500 truncate max-w-200 text-center"
+            style="
+              font-family:
+                Space Mono,
+                monospace;
+            "
+          >
+            {{ block.dataHash }}
+          </p>
+
+          <p class="text-gray-500 sm:text-center">
             {{ block.txCount }}
           </p>
 
-          <p class="text-gray-500 truncate max-w-100 text-center">
-            {{ block.currentBlockHash }}
-          </p>
-
-          <p class="text-gray-500 sm:text-right">{{ block.timestamp | formatDate }}</p>
+          <p class="text-gray-500 sm:text-center">{{ block.timestamp | formatDate }}</p>
 
           <p class="text-gray-500 sm:text-right">{{ block.size }} kB</p>
         </div>

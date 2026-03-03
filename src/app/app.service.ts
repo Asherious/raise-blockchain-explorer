@@ -84,6 +84,11 @@ export class AppService {
     return Date.now() - this.latestBlockCacheTime < this.LATEST_BLOCK_CACHE_TTL;
   }
 
+  // Check if blocks cache exists and is populated
+  hasBlocksCache(): boolean {
+    return this.blocksData !== null && this.blocksData.length > 0;
+  }
+
   // Fetch latest block number (uses cache if valid)
   fetchLatestBlockNumber(forceRefresh: boolean = false): Observable<number> {
     if (!forceRefresh && this.isLatestBlockCacheValid() && this.latestBlockNumber$.value > 0) {
@@ -138,7 +143,30 @@ export class AppService {
     result = this.getCachedBlockByTxId(id);
     if (result) return { type: 'txid', block: result };
 
+    // Try to find block by key via assets API
+    // Note: This requires an API call since keys are not cached in blocks
+    // The actual key lookup will be done in the component with getBlockByKey
+
     return { type: null, block: null };
+  }
+
+  // Search blocks by key - queries assets API to find txId then block
+  searchBlockByKey(
+    key: string,
+  ): Observable<{ type: 'key'; block: any } | { type: null; block: null }> {
+    return this.getBlockByKey(key).pipe(
+      map((txId) => {
+        if (!txId) {
+          return { type: null, block: null };
+        }
+        // Now find the block by txId
+        const block = this.getCachedBlockByTxId(txId);
+        if (block) {
+          return { type: 'key', block };
+        }
+        return { type: null, block: null };
+      }),
+    );
   }
 
   getBlockByNumber(blockNumber: string): Observable<any> {
@@ -151,9 +179,18 @@ export class AppService {
       });
     }
 
-    return this.getAllBlocks().pipe(
-      map((blocks: any[]) => blocks.find((block) => block.number === blockNumber)),
-    );
+    // Only fetch if cache is empty
+    if (!this.blocksData) {
+      return this.getAllBlocks().pipe(
+        map((blocks: any[]) => blocks.find((block) => block.number === blockNumber)),
+      );
+    }
+
+    // Cache exists but no match
+    return new Observable((sub) => {
+      sub.next(undefined);
+      sub.complete();
+    });
   }
 
   getBlockByDataHash(dataHash: string): Observable<any> {
@@ -166,9 +203,18 @@ export class AppService {
       });
     }
 
-    return this.getAllBlocks().pipe(
-      map((blocks: any[]) => blocks.find((block) => block.dataHash === dataHash)),
-    );
+    // Only fetch if cache is empty
+    if (!this.blocksData) {
+      return this.getAllBlocks().pipe(
+        map((blocks: any[]) => blocks.find((block) => block.dataHash === dataHash)),
+      );
+    }
+
+    // Cache exists but no match
+    return new Observable((sub) => {
+      sub.next(undefined);
+      sub.complete();
+    });
   }
 
   getBlockByCurrentBlockHash(currentBlockHash: string): Observable<any> {
@@ -181,12 +227,21 @@ export class AppService {
       });
     }
 
-    return this.getAllBlocks().pipe(
-      map((blocks: any[]) => blocks.find((block) => block.currentBlockHash === currentBlockHash)),
-    );
+    // Only fetch if cache is empty
+    if (!this.blocksData) {
+      return this.getAllBlocks().pipe(
+        map((blocks: any[]) => blocks.find((block) => block.currentBlockHash === currentBlockHash)),
+      );
+    }
+
+    // Cache exists but no match
+    return new Observable((sub) => {
+      sub.next(undefined);
+      sub.complete();
+    });
   }
 
-  getPreviousBlockHash(blockNumber: string): Observable<any> {
+  getBlockByPreviousBlockHash(blockNumber: string): Observable<any> {
     // Try cache first
     const cached = this.blocksData?.find((block) => block.number === blockNumber);
     if (cached) {
@@ -196,11 +251,21 @@ export class AppService {
       });
     }
 
-    return this.getAllBlocks().pipe(
-      map(
-        (blocks: any[]) => blocks.find((block) => block.number === blockNumber)?.previousBlockHash,
-      ),
-    );
+    // Only fetch if cache is empty
+    if (!this.blocksData) {
+      return this.getAllBlocks().pipe(
+        map(
+          (blocks: any[]) =>
+            blocks.find((block) => block.number === blockNumber)?.previousBlockHash,
+        ),
+      );
+    }
+
+    // Cache exists but no match
+    return new Observable((sub) => {
+      sub.next(undefined);
+      sub.complete();
+    });
   }
 
   getBlockByTxId(txId: string): Observable<any> {
@@ -213,9 +278,18 @@ export class AppService {
       });
     }
 
-    return this.getAllBlocks().pipe(
-      map((blocks: any[]) => blocks.find((block) => block.txIds && block.txIds.includes(txId))),
-    );
+    // Only fetch if cache is empty
+    if (!this.blocksData) {
+      return this.getAllBlocks().pipe(
+        map((blocks: any[]) => blocks.find((block) => block.txIds && block.txIds.includes(txId))),
+      );
+    }
+
+    // Cache exists but no match
+    return new Observable((sub) => {
+      sub.next(undefined);
+      sub.complete();
+    });
   }
 
   getBlockByKey(key: string): Observable<any> {
