@@ -143,10 +143,6 @@ export class AppService {
     result = this.getCachedBlockByTxId(id);
     if (result) return { type: 'txid', block: result };
 
-    // Try to find block by key via assets API
-    // Note: This requires an API call since keys are not cached in blocks
-    // The actual key lookup will be done in the component with getBlockByKey
-
     return { type: null, block: null };
   }
 
@@ -294,7 +290,7 @@ export class AppService {
 
   getBlockByKey(key: string): Observable<any> {
     // Query all assets and find the one with matching key
-    return this.http.get<any[]>(`${this.apiUrl}/assets`, { headers: this.getHeaders(false) }).pipe(
+    return this.http.get<any[]>(`${this.apiUrl}`, { headers: this.getHeaders(false) }).pipe(
       map((assets) => {
         const asset = assets.find((a) => a.key === key);
         if (asset?.record?.txId) {
@@ -309,7 +305,7 @@ export class AppService {
   getBlockTxDetails(txId: string): Observable<any> {
     if (!txId) return new Observable((sub) => sub.complete());
 
-    return this.http.get<any>(`${this.apiUrl}/assets`, {
+    return this.http.get<any>(`${this.apiUrl}`, {
       headers: this.getHeaders(false),
       params: { txId },
     });

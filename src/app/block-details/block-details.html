@@ -274,7 +274,7 @@
                     (click)="copy(txIds)"
                   >
                     <span
-                      class="ml-4 text-gray-500"
+                      class="ml-4 text-gray-500 truncate max-w-200"
                       style="
                         font-family:
                           Space Mono,
@@ -289,7 +289,7 @@
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      class="size-4 mt-0.5 self-center"
+                      class="size-4 shrink-0 mt-0.5 self-center"
                     >
                       <path
                         d="M16.5 6a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3v-6A4.5 4.5 0 0 1 10.5 6h6Z"
@@ -306,7 +306,7 @@
                       viewBox="0 0 24 24"
                       stroke-width="3"
                       stroke="#65ae61"
-                      class="size-4 mt-0.5 self-center"
+                      class="size-4 shrink-0 mt-0.5 self-center"
                     >
                       <path
                         stroke-linecap="round"
@@ -442,7 +442,9 @@
 <!-- Loading, Error, or Not Found -->
 <ng-template #loadingOrError>
   <div class="p-20 text-center text-[#7F8493] font-medium">
-    <div *ngIf="loading"></div>
+    <div *ngIf="loading">
+      <span class="text-2xl">Loading...</span>
+    </div>
     <div *ngIf="error">
       <p class="text-2xl">Error</p>
       <p class="text-sm">{{ error }}</p>

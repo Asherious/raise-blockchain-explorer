@@ -27,7 +27,7 @@ export class BlockDetails implements OnInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   block?: any;
-  loading = false;
+  loading = true;
   error: string | null = null;
   txDetailsMap = new Map<string, any>();
   loadingTx = new Set<string>();
@@ -43,16 +43,13 @@ export class BlockDetails implements OnInit {
 
   private routeSub?: Subscription;
   // Subscribe to route params
-  ngOnInit() {
-    // Only run in browser - SSR will skip this entirely
+  async ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    // Try to get cached latest block number first
     this.latestBlockNumber = this.appService.getLatestBlockNumber();
 
-    // Also subscribe to updates
     this.appService.getLatestBlockNumberObservable().subscribe((num) => {
       if (num > 0) {
         this.latestBlockNumber = num;
@@ -60,33 +57,28 @@ export class BlockDetails implements OnInit {
       }
     });
 
-    // Fetch latest block number with caching - don't force refresh every time
     this.appService.fetchLatestBlockNumber().subscribe({
       next: (num: number) => {
-        if (num > 0) {
-          this.latestBlockNumber = num;
-        }
+        if (num > 0) this.latestBlockNumber = num;
       },
     });
 
+    // 🔥 IMPORTANT: ensure cache is loaded first
+    if (!this.appService.hasBlocksCache()) {
+      await firstValueFrom(this.appService.getAllBlocks());
+    }
+
+    // THEN subscribe to route
     this.routeSub = this.route.paramMap.subscribe(async (paramMap) => {
       const id = paramMap.get('blockNumber') ?? '';
 
-      // Skip if same ID to avoid unnecessary reload
-      if (id === this.previousId) {
+      if (id === this.previousId && this.block) {
         return;
       }
-
       if (!id) return;
 
       this.previousId = id;
       this.searchedId = id;
-
-      // Ensure blocks are loaded before searching
-      // This fixes cache miss on direct URL navigation
-      if (!this.appService.hasBlocksCache()) {
-        await firstValueFrom(this.appService.getAllBlocks());
-      }
 
       await this.tryLoadBlock(id);
     });
@@ -117,7 +109,7 @@ export class BlockDetails implements OnInit {
   private async tryLoadBlock(id: string): Promise<void> {
     this.loading = true;
     this.error = null;
-    this.block = undefined;
+    this.block = null;
     this.openSet.clear();
     this.txDetailsMap.clear();
     this.loadingTx.clear();
@@ -147,8 +139,6 @@ export class BlockDetails implements OnInit {
       return;
     }
 
-    // Try to search by key (keys are alphanumeric and may be misidentified as txid)
-    // Use the dedicated searchBlockByKey method
     const keyResult = await firstValueFrom(this.appService.searchBlockByKey(id));
     if (keyResult.block) {
       this.loadMethod = 'key';
@@ -168,8 +158,6 @@ export class BlockDetails implements OnInit {
       return;
     }
 
-    // If not found in cache, use the determined search type for direct API call
-    // This is faster than iterating through all attempt types sequentially
     let data = null;
 
     try {
