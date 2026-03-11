@@ -20,8 +20,8 @@
             <span
               class="w-4 h-4 rounded-full"
               [ngClass]="{
-                'bg-[#65ae61]': node.status === 'UP',
-                'bg-red-500': node.status === 'DOWN',
+                'bg-[#65ae61]': node.status === true,
+                'bg-red-500': node.status === false,
               }"
             ></span>
           </div>
