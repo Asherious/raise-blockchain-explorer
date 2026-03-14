@@ -82,7 +82,7 @@
           </p>
 
           <p
-            class="text-gray-500 truncate max-w-200 text-center"
+            class="text-gray-500 truncate max-w-full text-center"
             style="
               font-family:
                 Space Mono,
@@ -96,9 +96,17 @@
             {{ block.txCount }}
           </p>
 
-          <p class="text-gray-500 sm:text-center">{{ block.timestamp | formatDate }}</p>
+          <p class="hidden sm:block text-gray-500 sm:text-center">
+            {{ block.timestamp | formatDate }}
+          </p>
 
-          <p class="text-gray-500 sm:text-right">{{ block.size }} kB</p>
+          <p class="hidden sm:block text-gray-500 sm:text-right">{{ block.size }} kB</p>
+          <p class="sm:hidden flex flex-row justify-between">
+            <span class="text-gray-500 sm:text-right">{{ block.size }} kB</span>
+            <span class="text-gray-500 sm:text-center">
+              {{ block.timestamp | formatDate }}
+            </span>
+          </p>
         </div>
       </a>
     </div>

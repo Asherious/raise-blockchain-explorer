@@ -70,9 +70,8 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   error: string | null = null;
   isLoading: boolean = true;
 
-  nodeList: any[] = [];
   blockList: any[] = [];
-  chaincodeList: any[] = [];
+  nodeList: any[] = [];
 
   get displayedBlocks(): any[] {
     return this.blockList;
@@ -99,27 +98,23 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   fetchAllData() {
     this.isLoading = true;
 
-    forkJoin({
-      blocks: this.http.get<any[]>(`${environment.apiURL}/blocks`),
-      nodes: this.http.get<any[]>(`${environment.apiURL}/nodes`),
-    }).subscribe({
-      next: (data) => {
-        // Process blocks - sort and store
-        this.blockList = data.blocks.sort((a, b) => parseInt(b.number) - parseInt(a.number));
+    // Load blocks immediately
+    this.http.get<any[]>(`${environment.apiURL}/blocks`).subscribe({
+      next: (blocks) => {
+        this.blockList = blocks.sort((a, b) => parseInt(b.number) - parseInt(a.number));
 
-        // Store node and chaincode data
-        this.nodeList = data.nodes;
+        this.initBlockChart();
+        this.initTransactionChart();
 
         this.isLoading = false;
         this.cdr.markForCheck();
-
-        // Initialize charts after data is loaded
-        this.initBlockChart();
-        this.initTransactionChart();
       },
-      error: (err) => {
-        this.error = 'Failed to load dashboard data';
-        this.isLoading = false;
+    });
+
+    // Load nodes separately (can take up to 2s)
+    this.http.get<any[]>(`${environment.apiURL}/nodes`).subscribe({
+      next: (nodes) => {
+        this.nodeList = nodes;
         this.cdr.markForCheck();
       },
     });
