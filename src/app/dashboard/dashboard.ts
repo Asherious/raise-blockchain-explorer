@@ -16,8 +16,8 @@ import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { FormatDatePipe } from '../format-date.pipe';
+import { AppService } from '../app.service';
 import 'chartjs-adapter-date-fns';
-// Import Chart.js components
 import {
   Chart,
   LineController,
@@ -62,18 +62,19 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
 
   // Inject HttpClient for API calls
   private http: HttpClient = inject(HttpClient);
+  private appService: AppService = inject(AppService);
   private cdr = inject(ChangeDetectorRef);
 
   private themeObserver: MutationObserver | null = null;
   private isDarkMode: boolean = false;
 
   error: string | null = null;
-  isLoading: boolean = true;
+  isLoading = true;
 
   blockList: any[] = [];
   nodeList: any[] = [];
 
-  get displayedBlocks(): any[] {
+  get totalBlocks(): any[] {
     return this.blockList;
   }
 
@@ -97,24 +98,26 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   // Fetch all data in parallel using forkJoin
   fetchAllData() {
     this.isLoading = true;
+    this.error = null;
 
-    // Load blocks immediately
-    this.http.get<any[]>(`${environment.apiURL}/blocks`).subscribe({
-      next: (blocks) => {
+    forkJoin({
+      blocks: this.appService.getAllBlocks(),
+      nodes: this.appService.getAllNodes(),
+    }).subscribe({
+      next: ({ blocks, nodes }) => {
         this.blockList = blocks.sort((a, b) => parseInt(b.number) - parseInt(a.number));
+
+        this.nodeList = nodes;
 
         this.initBlockChart();
         this.initTransactionChart();
-
-        this.isLoading = false;
-        this.cdr.markForCheck();
       },
-    });
-
-    // Load nodes separately (can take up to 2s)
-    this.http.get<any[]>(`${environment.apiURL}/nodes`).subscribe({
-      next: (nodes) => {
-        this.nodeList = nodes;
+      error: (err) => {
+        console.error('Failed to fetch data', err);
+        this.error = 'Failed to load dashboard data';
+      },
+      complete: () => {
+        this.isLoading = false;
         this.cdr.markForCheck();
       },
     });
@@ -173,7 +176,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Method for Block Chart
+  // Block Chart
   initBlockChart() {
     if (!this.blockChartRef || !this.blockChartRef.nativeElement) {
       console.error('Block Chart Canvas not found or not ready.');
@@ -293,7 +296,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
             label: 'Blocks',
             data: aggregatedData,
             backgroundColor: gradientblockFill,
-            tension: 0.2,
+            tension: 0.1,
             borderWidth: 0,
             pointRadius: 0,
             pointHitRadius: 10,
@@ -375,7 +378,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
           y: {
             display: true,
             min: 0,
-            suggestedMax: 100,
+            suggestedMax: 10,
             border: {
               width: 0,
             },
@@ -384,12 +387,12 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
             },
             ticks: {
               padding: 0,
+              source: 'auto',
               font: {
                 family: 'Poppins, sans-serif',
                 weight: 'bolder',
                 size: 12,
               },
-              stepSize: 10,
               callback: function (value: any) {
                 return value === 0 ? '' : value;
               },
@@ -400,7 +403,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Method for Transactions Chart
+  // Transactions Chart
   initTransactionChart() {
     if (!this.txChartRef || !this.txChartRef.nativeElement) {
       console.error('Transaction Chart Canvas not found or not ready.');
@@ -518,7 +521,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
             label: 'Transactions',
             data: aggregatedData,
             backgroundColor: gradienttxFill,
-            tension: 0.2,
+            tension: 0.1,
             borderWidth: 0,
             pointRadius: 0,
             pointHitRadius: 10,
@@ -600,7 +603,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
           y: {
             display: true,
             min: 0,
-            suggestedMax: 100,
+            suggestedMax: 10,
             border: {
               width: 0,
             },
@@ -609,12 +612,12 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
             },
             ticks: {
               padding: 0,
+              source: 'auto',
               font: {
                 family: 'Poppins, sans-serif',
                 weight: 'bolder',
                 size: 12,
               },
-              stepSize: 10,
               callback: function (value: any) {
                 return value === 0 ? '' : value;
               },
@@ -624,18 +627,19 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       },
     });
   }
+
   // Block and Transaction aggregation methods
   getAggregatedBlocksPerHour() {
     const now = Date.now();
-    const oneHour = 60 * 60 * 1000;
+    const hour = 60 * 60 * 1000;
 
-    const hourlyBins: { [key: number]: { count: number; latestTs: number } } = {};
+    const hourlyBins: { [key: number]: { blockCount: number; latestTs: number } } = {};
 
     for (let i = 24; i >= 0; i--) {
-      const startOfHour = new Date(now - i * oneHour);
+      const startOfHour = new Date(now - i * hour);
       startOfHour.setMinutes(0, 0, 0);
       hourlyBins[startOfHour.getTime()] = {
-        count: 0,
+        blockCount: 0,
         latestTs: startOfHour.getTime(),
       };
     }
@@ -643,13 +647,13 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.blockList.forEach((block) => {
       const blockTs = new Date(block.timestamp).getTime();
 
-      if (blockTs >= now - 24 * oneHour && blockTs <= now) {
+      if (blockTs >= now - 24 * hour && blockTs <= now) {
         const blockDate = new Date(blockTs);
         blockDate.setMinutes(0, 0, 0);
         const key = blockDate.getTime();
 
         if (hourlyBins[key]) {
-          hourlyBins[key].count++;
+          hourlyBins[key].blockCount++;
           if (blockTs > hourlyBins[key].latestTs) {
             hourlyBins[key].latestTs = blockTs;
           }
@@ -657,39 +661,21 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    /* 🔥 ADD 30 FAKE ENTRIES HERE */
-    /*for (let i = 1; i <= 50; i++) {
-      const fakeHour = new Date(now - (24 + i) * oneHour);
-      fakeHour.setMinutes(0, 0, 0);
-
-      const fakeKey = fakeHour.getTime();
-
-      if (!hourlyBins[fakeKey]) {
-        hourlyBins[fakeKey] = {
-          count: Math.floor(Math.random() * 100) + 1, // fake block count
-          latestTs: fakeKey,
-        };
-      }
-    }*/
-
     return Object.keys(hourlyBins)
       .sort((a, b) => Number(a) - Number(b))
       .map((timestampStr) => {
         const hourBin = hourlyBins[Number(timestampStr)];
-        return {
-          x: new Date(hourBin.latestTs),
-          y: hourBin.count,
-        };
+        return { x: new Date(hourBin.latestTs), y: hourBin.blockCount };
       });
   }
 
   getAggregatedTxPerHour() {
     const now = Date.now();
-    const oneHour = 60 * 60 * 1000;
+    const hour = 60 * 60 * 1000;
 
     const hourlyBins: { [key: number]: { txCount: number; latestTs: number } } = {};
     for (let i = 24; i >= 0; i--) {
-      const startOfHour = new Date(now - i * oneHour);
+      const startOfHour = new Date(now - i * hour);
       startOfHour.setMinutes(0, 0, 0);
       hourlyBins[startOfHour.getTime()] = { txCount: 0, latestTs: startOfHour.getTime() };
     }
@@ -697,7 +683,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.blockList.forEach((block) => {
       const blockTs = new Date(block.timestamp).getTime();
 
-      if (blockTs >= now - 24 * oneHour && blockTs <= now) {
+      if (blockTs >= now - 24 * hour && blockTs <= now) {
         const blockDate = new Date(blockTs);
         blockDate.setMinutes(0, 0, 0);
         const key = blockDate.getTime();
@@ -718,13 +704,4 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
         return { x: new Date(hourBin.latestTs), y: hourBin.txCount };
       });
   }
-}
-function beforeDatasetsDraw(
-  chart: {
-    ctx: CanvasRenderingContext2D;
-    chartArea: { top: number; left: number; width: number; height: number };
-  },
-  any: any,
-) {
-  throw new Error('Function not implemented.');
 }

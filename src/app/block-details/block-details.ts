@@ -2,9 +2,11 @@ import { Component, inject, OnInit, ChangeDetectorRef, PLATFORM_ID, Inject } fro
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { map, distinctUntilChanged } from 'rxjs/operators';
 import { AppService } from '../app.service';
 import { FormatDatePipe } from '../format-date.pipe';
 import { Subscription } from 'rxjs';
+import { environment } from '../../environment/environment';
 
 @Component({
   selector: 'app-block-details',
@@ -24,8 +26,6 @@ export class BlockDetails implements OnInit {
   private appService = inject(AppService);
   private cdr = inject(ChangeDetectorRef);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
   block?: any;
   loading = true;
   error: string | null = null;
@@ -38,18 +38,21 @@ export class BlockDetails implements OnInit {
   searchedId: string = '';
   loadMethod: 'number' | 'hash' | 'txid' | 'key' = 'number';
 
-  // Track previous ID to skip reloading same block
   private previousId: string = '';
 
   private routeSub?: Subscription;
+
+  // Cache searchType per ID to prevent repeated calls
+  private searchTypeCache = new Map<string, 'number' | 'hash' | 'txid' | 'key'>();
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
   // Subscribe to route params
   async ngOnInit() {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
 
+    // Get latest block number
     this.latestBlockNumber = this.appService.getLatestBlockNumber();
-
     this.appService.getLatestBlockNumberObservable().subscribe((num) => {
       if (num > 0) {
         this.latestBlockNumber = num;
@@ -57,56 +60,54 @@ export class BlockDetails implements OnInit {
       }
     });
 
-    this.appService.fetchLatestBlockNumber().subscribe({
-      next: (num: number) => {
-        if (num > 0) this.latestBlockNumber = num;
-      },
-    });
-
-    // 🔥 IMPORTANT: ensure cache is loaded first
+    // Ensure cache is loaded first
     if (!this.appService.hasBlocksCache()) {
       await firstValueFrom(this.appService.getAllBlocks());
     }
 
-    // THEN subscribe to route
-    this.routeSub = this.route.paramMap.subscribe(async (paramMap) => {
-      const id = paramMap.get('blockNumber') ?? '';
-
-      if (id === this.previousId && this.block) {
-        return;
-      }
-      if (!id) return;
-
-      this.previousId = id;
-      this.searchedId = id;
-
-      await this.tryLoadBlock(id);
-    });
+    // Subscribe to route changes, only fire when blockNumber changes
+    this.routeSub = this.route.paramMap
+      .pipe(
+        map((params) => params.get('blockNumber') ?? ''),
+        distinctUntilChanged(),
+      )
+      .subscribe(async (id) => {
+        if (!id) return;
+        this.searchedId = id;
+        await this.tryLoadBlock(id);
+      });
   }
   // Cleanup subscription
   ngOnDestroy() {
     this.routeSub?.unsubscribe();
   }
 
-  // Determine the likely search type from the input format
-  private determineSearchType(id: string): 'number' | 'hash' | 'txid' | 'key' | 'unknown' {
-    // Check if it's a number
-    if (/^\d+$/.test(id)) {
-      return 'number';
-    }
-    // Check if it looks like a hex hash (64 chars for SHA-256)
-    if (/^[a-fA-F0-9]{64}$/.test(id)) {
-      return 'hash';
-    }
-    // Could be txid or key - these are typically longer hex strings
-    if (/^[a-fA-F0-9]+$/.test(id)) {
-      return 'txid';
-    }
-    return 'unknown';
+  // --- Determine search type once per ID ---
+  private async getSearchType(id: string): Promise<'number' | 'hash' | 'txid' | 'key'> {
+    if (this.searchTypeCache.has(id)) return this.searchTypeCache.get(id)!;
+
+    let type: 'number' | 'hash' | 'txid' | 'key';
+
+    if (/^\d+$/.test(id)) type = 'number';
+    else if (/^[a-fA-F0-9]{64}$/.test(id)) {
+      try {
+        const txData = await firstValueFrom(this.appService.getBlockByTxId(id));
+        type = txData?.number ? 'txid' : 'hash';
+      } catch {
+        type = 'hash';
+      }
+    } else if (/^[a-fA-F0-9]+$/.test(id)) type = 'txid';
+    else type = 'key';
+
+    this.searchTypeCache.set(id, type);
+    return type;
   }
 
-  // Attempt to load block - optimized to use cache first
+  // --- Load block based on search type ---
   private async tryLoadBlock(id: string): Promise<void> {
+    if (id === this.previousId) return; // prevent duplicate
+    this.previousId = id;
+
     this.loading = true;
     this.error = null;
     this.block = null;
@@ -114,18 +115,19 @@ export class BlockDetails implements OnInit {
     this.txDetailsMap.clear();
     this.loadingTx.clear();
 
-    // Determine search type first to optimize lookup
-    let searchType = this.determineSearchType(id);
+    const searchType = await this.getSearchType(id);
+    const apiUrl = this.appService.getApiUrl();
 
-    // Try cache-first approach
+    console.log('Search Type:', searchType);
+    console.log('Current URL:', this.router.url);
+
+    // Try cache first
     const cachedResult = this.appService.searchBlock(id);
-
     if (cachedResult.block) {
-      this.loadMethod = cachedResult.type || 'number';
+      this.loadMethod = cachedResult.type || searchType;
       this.block = cachedResult.block;
       this.loading = false;
 
-      // If searching by txid or key, auto-expand the relevant transaction
       if (searchType === 'txid' || cachedResult.type === 'txid') {
         const txIdToFind = this.searchedId;
         const index = this.block.txIds?.indexOf(txIdToFind);
@@ -136,16 +138,16 @@ export class BlockDetails implements OnInit {
       }
 
       this.cdr.detectChanges();
-      return;
+      return; // stop further API calls
     }
 
+    // Key-based search
     const keyResult = await firstValueFrom(this.appService.searchBlockByKey(id));
     if (keyResult.block) {
       this.loadMethod = 'key';
       this.block = keyResult.block;
       this.loading = false;
-      // Auto-expand the transaction for key search
-      // First get the txId from the key, then find it in the block
+
       const txIdFromKey = await firstValueFrom(this.appService.getBlockByKey(id));
       if (txIdFromKey) {
         const index = this.block.txIds?.indexOf(txIdFromKey);
@@ -154,39 +156,34 @@ export class BlockDetails implements OnInit {
           this.loadTxDetails(txIdFromKey);
         }
       }
+
       this.cdr.detectChanges();
       return;
     }
 
-    let data = null;
-
+    // Fetch from API based on type
+    let data: any = null;
     try {
       switch (searchType) {
         case 'number':
           data = await firstValueFrom(this.appService.getBlockByNumber(id));
           this.loadMethod = 'number';
           break;
+
         case 'hash':
-          // Try data hash first, then current block hash in parallel
-          const [byDataHash, byCurrentHash, byPreviousHash] = await Promise.all([
+          const [byDataHash, byCurrentHash] = await Promise.all([
             firstValueFrom(this.appService.getBlockByDataHash(id)),
             firstValueFrom(this.appService.getBlockByCurrentBlockHash(id)),
-            firstValueFrom(this.appService.getBlockByPreviousBlockHash(id)),
           ]);
-          data = byDataHash || byCurrentHash || byPreviousHash;
+          data = byDataHash || byCurrentHash;
           this.loadMethod = 'hash';
           break;
+
         case 'txid':
           data = await firstValueFrom(this.appService.getBlockByTxId(id));
-          if (!data?.number) {
-            const txIdFromKey = await firstValueFrom(this.appService.getBlockByKey(id));
-            if (txIdFromKey) {
-              data = await firstValueFrom(this.appService.getBlockByTxId(txIdFromKey));
-              searchType = 'key'; // Update searchType for auto-expand logic
-            }
-          }
           this.loadMethod = 'txid';
           break;
+
         case 'key':
           const txId = await firstValueFrom(this.appService.getBlockByKey(id));
           if (txId) {
@@ -194,40 +191,24 @@ export class BlockDetails implements OnInit {
           }
           this.loadMethod = 'key';
           break;
-        default:
-          // For unknown types, try number first then hash
-          data = await firstValueFrom(this.appService.getBlockByNumber(id));
-          if (!data?.number) {
-            const [byDataHash, byCurrentHash] = await Promise.all([
-              firstValueFrom(this.appService.getBlockByDataHash(id)),
-              firstValueFrom(this.appService.getBlockByCurrentBlockHash(id)),
-            ]);
-            data = byDataHash || byCurrentHash;
-          }
-          break;
       }
 
       if (data?.number) {
         this.block = data;
         this.openSet.clear();
 
-        // Auto-expand the relevant transaction for txid/key searches
-        if (searchType === 'txid') {
-          const txIdToFind =
-            searchType === 'txid'
-              ? this.searchedId
-              : await firstValueFrom(this.appService.getBlockByKey(this.searchedId));
-          const index = this.block.txIds?.indexOf(txIdToFind);
+        // Auto-expand tx if txid or key
+        const txToFind =
+          searchType === 'txid'
+            ? this.searchedId
+            : await firstValueFrom(this.appService.getBlockByKey(this.searchedId));
+        if (txToFind) {
+          const index = this.block.txIds?.indexOf(txToFind);
           if (index !== undefined && index !== -1) {
             this.openSet.add(index);
-            this.loadTxDetails(txIdToFind);
+            this.loadTxDetails(txToFind);
           }
         }
-      } else {
-        this.block = null;
-        this.loadingTx.clear();
-        this.openSet.clear();
-        this.txDetailsMap.clear();
       }
     } catch {
       this.error = 'Failed to load block';
@@ -310,14 +291,14 @@ export class BlockDetails implements OnInit {
   // Navigate to previous block
   goToPreviousBlock() {
     if (this.block && parseInt(this.block.number) > 0) {
-      this.router.navigate(['/blocks', parseInt(this.block.number) - 1]);
+      this.router.navigate(['/block', parseInt(this.block.number) - 1]);
     }
   }
 
   // Navigate to next block
   goToNextBlock() {
     if (this.block && parseInt(this.block.number) < this.latestBlockNumber) {
-      this.router.navigate(['/blocks', parseInt(this.block.number) + 1]);
+      this.router.navigate(['/block', parseInt(this.block.number) + 1]);
     }
   }
 }

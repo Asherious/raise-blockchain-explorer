@@ -9,6 +9,36 @@
         <span>Nodes</span>
         <span>Status</span>
       </div>
+      <div *ngIf="isLoading" class="text-center font-medium py-20">
+        <!-- Loading -->
+        <div
+          class="relative inline-block w-20 h-20 p-3 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+        >
+          <div
+            class="w-full h-full rounded-full border-6 border-t-transparent border-r-transparent border-b-transparent border-l-transparent shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
+          ></div>
+
+          <div
+            class="absolute inset-0 filter drop-shadow-[2px_2px_2px_#c8c8c8,-2px_-2px_2px_#ffffff] dark:drop-shadow-[2px_2px_2px_#0000004d,-2px_-2px_2px_#ffffff14]"
+          >
+            <svg
+              class="w-20 h-20 animate-spin stroke-[#e0e4e7] dark:stroke-[#24272C]"
+              viewBox="0 0 100 100"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="42.5"
+                stroke-width="15"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="70 200"
+              />
+            </svg>
+          </div>
+        </div>
+        <p class="mt-4 text-2xl">Loading...</p>
+      </div>
       <div
         class="overscroll-none overflow-y-auto scrollbar-hide h-[246px] 2xl:h-[414px] p-2 space-y-3 rounded-[10px]"
       >
@@ -33,6 +63,36 @@
       class="p-2 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
     >
       <div class="font-medium text-center shrink-0">Blocks in the last 24 hours</div>
+      <div *ngIf="isLoading" class="text-center font-medium py-20">
+        <!-- Loading -->
+        <div
+          class="relative inline-block w-20 h-20 p-3 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+        >
+          <div
+            class="w-full h-full rounded-full border-6 border-t-transparent border-r-transparent border-b-transparent border-l-transparent shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
+          ></div>
+
+          <div
+            class="absolute inset-0 filter drop-shadow-[2px_2px_2px_#c8c8c8,-2px_-2px_2px_#ffffff] dark:drop-shadow-[2px_2px_2px_#0000004d,-2px_-2px_2px_#ffffff14]"
+          >
+            <svg
+              class="w-20 h-20 animate-spin stroke-[#e0e4e7] dark:stroke-[#24272C]"
+              viewBox="0 0 100 100"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="42.5"
+                stroke-width="15"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="70 200"
+              />
+            </svg>
+          </div>
+        </div>
+        <p class="mt-4 text-2xl">Loading...</p>
+      </div>
       <canvas #blockChartCanvas class="flex-1 min-h-0 overflow-hidden block w-full h-full"></canvas>
     </div>
 
@@ -43,12 +103,42 @@
       <div class="items-center font-medium text-center">
         <span>Latest Blocks</span>
       </div>
+      <div *ngIf="isLoading" class="text-center font-medium py-20">
+        <!-- Loading -->
+        <div
+          class="relative inline-block w-20 h-20 p-3 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+        >
+          <div
+            class="w-full h-full rounded-full border-6 border-t-transparent border-r-transparent border-b-transparent border-l-transparent shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
+          ></div>
+
+          <div
+            class="absolute inset-0 filter drop-shadow-[2px_2px_2px_#c8c8c8,-2px_-2px_2px_#ffffff] dark:drop-shadow-[2px_2px_2px_#0000004d,-2px_-2px_2px_#ffffff14]"
+          >
+            <svg
+              class="w-20 h-20 animate-spin stroke-[#e0e4e7] dark:stroke-[#24272C]"
+              viewBox="0 0 100 100"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="42.5"
+                stroke-width="15"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="70 200"
+              />
+            </svg>
+          </div>
+        </div>
+        <p class="mt-4 text-2xl">Loading...</p>
+      </div>
       <div
         *ngIf="blockList.length"
         class="overscroll-none overflow-y-auto scrollbar-hide h-[246px] 2xl:h-[414px] p-2 space-y-2.5 2xl:space-y-3 rounded-[10px]"
       >
         <div *ngFor="let block of blockList">
-          <a [routerLink]="['/blocks', block.number]">
+          <a [routerLink]="['/block', block.number]">
             <button
               class="cursor-pointer p-[3.5px] w-full flex md:flex bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[10px] hover:-translate-y-1 duration-300"
             >
@@ -102,6 +192,36 @@
       class="p-2 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
     >
       <div class="font-medium text-center shrink-0">Transactions in the last 24 hours</div>
+      <div *ngIf="isLoading" class="text-center font-medium py-20">
+        <!-- Loading -->
+        <div
+          class="relative inline-block w-20 h-20 p-3 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+        >
+          <div
+            class="w-full h-full rounded-full border-6 border-t-transparent border-r-transparent border-b-transparent border-l-transparent shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
+          ></div>
+
+          <div
+            class="absolute inset-0 filter drop-shadow-[2px_2px_2px_#c8c8c8,-2px_-2px_2px_#ffffff] dark:drop-shadow-[2px_2px_2px_#0000004d,-2px_-2px_2px_#ffffff14]"
+          >
+            <svg
+              class="w-20 h-20 animate-spin stroke-[#e0e4e7] dark:stroke-[#24272C]"
+              viewBox="0 0 100 100"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="42.5"
+                stroke-width="15"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="70 200"
+              />
+            </svg>
+          </div>
+        </div>
+        <p class="mt-4 text-2xl">Loading...</p>
+      </div>
       <canvas #txChartCanvas class="flex-1 min-h-0 overflow-hidden block w-full h-full"></canvas>
     </div>
   </div>

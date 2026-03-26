@@ -66,33 +66,6 @@
           />
         </svg>
       </a>
-      <!--<a
-        routerLink="chaincodes"
-        routerLinkActive="active text-black dark:text-white"
-        class="relative p-4 flex justify-center aspect-square rounded-[10px] hover:text-black hover:dark:text-white bg-[#e0e4e7] dark:bg-[#24272C] transition-all duration-300 ease-in-out group"
-      >
-        
-        <span
-          class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
-        ></span>
-        
-        <span
-          class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
-        ></span>
-        
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          class="size-6 transition-transform duration-300 ease-in-out group-hover:scale-[0.9]"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M19.902 4.098a3.75 3.75 0 0 0-5.304 0l-4.5 4.5a3.75 3.75 0 0 0 1.035 6.037.75.75 0 0 1-.646 1.353 5.25 5.25 0 0 1-1.449-8.45l4.5-4.5a5.25 5.25 0 1 1 7.424 7.424l-1.757 1.757a.75.75 0 1 1-1.06-1.06l1.757-1.757a3.75 3.75 0 0 0 0-5.304Zm-7.389 4.267a.75.75 0 0 1 1-.353 5.25 5.25 0 0 1 1.449 8.45l-4.5 4.5a5.25 5.25 0 1 1-7.424-7.424l1.757-1.757a.75.75 0 1 1 1.06 1.06l-1.757 1.757a3.75 3.75 0 1 0 5.304 5.304l4.5-4.5a3.75 3.75 0 0 0-1.035-6.037.75.75 0 0 1-.354-1Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>-->
     </div>
   </div>
 
@@ -110,7 +83,7 @@
           <div
             class="flex items-center py-2 px-4 space-x-2 justify-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-full"
           >
-            <span class="font-medium">{{ blockList.length }}</span>
+            <span class="font-medium">{{ stats?.totalBlocks }}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -125,7 +98,7 @@
           <div
             class="flex items-center py-2 px-4 space-x-2 justify-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-full"
           >
-            <span class="font-medium">{{ totalTransactions }}</span>
+            <span class="font-medium">{{ stats?.totalTransactions }}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -186,7 +159,7 @@
         <div
           class="flex items-center py-2 px-4 space-x-2 justify-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-full"
         >
-          <span class="font-medium">{{ blockList.length }}</span>
+          <span class="font-medium">{{ stats?.totalBlocks }}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -201,7 +174,7 @@
         <div
           class="flex items-center py-2 px-4 space-x-2 justify-center bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-full"
         >
-          <span class="font-medium">{{ totalTransactions }} </span>
+          <span class="font-medium">{{ stats?.totalTransactions }} </span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

@@ -39,17 +39,24 @@ export class App {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.fetchBlockData();
+      this.fetchStats();
     }
   }
-  // Fetch block data from API
-  fetchBlockData() {
-    this.http.get<any[]>(`${environment.apiURL}/blocks`).subscribe({
-      next: (data) => {
-        this.blockList = data;
-        this.cdr.detectChanges();
-      },
-    });
+
+  stats: { totalBlocks: number; totalTransactions: number } | null = null;
+
+  fetchStats() {
+    this.http
+      .get<{ totalBlocks: number; totalTransactions: number }>(`${environment.apiURL}/stats`)
+      .subscribe({
+        next: (data) => {
+          this.stats = data;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.error = 'Failed to load stats';
+        },
+      });
   }
 
   title = 'Raise Blockchain Explorer';
@@ -59,7 +66,7 @@ export class App {
   onSearch(val: string) {
     const id = val.trim();
     if (id) {
-      this.router.navigate(['blocks', id]);
+      this.router.navigate(['block', id]);
       this.searchInput.nativeElement.value = '';
     }
   }

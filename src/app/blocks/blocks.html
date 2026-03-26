@@ -1,5 +1,35 @@
 <!-- Blocks -->
-<div>
+<div *ngIf="isLoading" class="text-center font-medium py-20">
+  <!-- Loading -->
+  <div
+    class="relative inline-block w-20 h-20 p-3 rounded-full shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14]"
+  >
+    <div
+      class="w-full h-full rounded-full border-6 border-t-transparent border-r-transparent border-b-transparent border-l-transparent shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14]"
+    ></div>
+
+    <div
+      class="absolute inset-0 filter drop-shadow-[2px_2px_2px_#c8c8c8,-2px_-2px_2px_#ffffff] dark:drop-shadow-[2px_2px_2px_#0000004d,-2px_-2px_2px_#ffffff14]"
+    >
+      <svg
+        class="w-20 h-20 animate-spin stroke-[#e0e4e7] dark:stroke-[#24272C]"
+        viewBox="0 0 100 100"
+      >
+        <circle
+          cx="50"
+          cy="50"
+          r="42.5"
+          stroke-width="15"
+          fill="none"
+          stroke-linecap="round"
+          stroke-dasharray="70 200"
+        />
+      </svg>
+    </div>
+  </div>
+  <p class="mt-4 text-2xl">Loading...</p>
+</div>
+<div *ngIf="!isLoading">
   <!-- Horizontal Scrollable Block List -->
   <div>
     <div
@@ -11,7 +41,7 @@
       (mousedown)="onMouseDown($event)"
     >
       <div *ngFor="let block of blockList" class="relative z-10">
-        <a [routerLink]="['/blocks', block.number]" draggable="false">
+        <a [routerLink]="['/block', block.number]" draggable="false">
           <div
             class="px-3 flex-row"
             (dragstart)="$event.preventDefault()"
@@ -62,7 +92,7 @@
     <div class="space-y-3">
       <a
         *ngFor="let block of paginatedBlockList"
-        [routerLink]="['/blocks', block.number]"
+        [routerLink]="['/block', block.number]"
         class="relative group block w-full rounded-[10px]"
       >
         <!-- Normal Shadow -->
@@ -116,7 +146,7 @@
       <button
         (click)="previousPage()"
         [disabled]="currentPage === 1"
-        class="cursor-pointer relative p-2.5 rounded-full transition-all duration-300 ease-in-out group disabled:opacity-0"
+        class="cursor-pointer relative p-2.5 rounded-full transition-all duration-300 ease-in-out group disabled:opacity-0 disabled:cursor-default"
       >
         <!-- Normal Shadow -->
         <span
@@ -179,7 +209,7 @@
       <button
         (click)="nextPage()"
         [disabled]="currentPage === totalPages"
-        class="cursor-pointer relative p-2.5 rounded-full transition-all duration-300 ease-in-out group disabled:opacity-0"
+        class="cursor-pointer relative p-2.5 rounded-full transition-all duration-300 ease-in-out group disabled:opacity-0 disabled:cursor-default"
       >
         <!-- Normal Shadow -->
         <span
