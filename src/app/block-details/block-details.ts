@@ -116,7 +116,7 @@ export class BlockDetails implements OnInit {
     this.loadingTx.clear();
 
     const searchType = await this.getSearchType(id);
-    const apiUrl = this.appService.getApiUrl();
+    const apiUrl = this.appService.getApiUrl(); // getter in AppService
 
     console.log('Search Type:', searchType);
     console.log('Current URL:', this.router.url);

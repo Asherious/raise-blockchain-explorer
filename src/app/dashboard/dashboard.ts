@@ -18,10 +18,13 @@ import { forkJoin } from 'rxjs';
 import { FormatDatePipe } from '../format-date.pipe';
 import { AppService } from '../app.service';
 import 'chartjs-adapter-date-fns';
+// Import Chart.js components
 import {
   Chart,
   LineController,
   LineElement,
+  BarController,
+  BarElement,
   PointElement,
   LinearScale,
   CategoryScale,
@@ -32,11 +35,12 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
-import { environment } from '../../environment/environment';
 
 Chart.register(
   LineController,
   LineElement,
+  BarController,
+  BarElement,
   PointElement,
   LinearScale,
   CategoryScale,
@@ -80,6 +84,37 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
 
   get totalTransactions(): number {
     return this.blockList.reduce((sum, block) => sum + block.txCount, 0);
+  }
+
+  selectedBlocksRange: '24h' | 'week' | 'month' | 'all' = '24h';
+  selectedTxRange: '24h' | 'week' | 'month' | 'all' = '24h';
+
+  setBlocksRange(range: '24h' | 'week' | 'month' | 'all') {
+    this.selectedBlocksRange = range;
+
+    if (this.selectedBlocksRange === '24h') {
+      this.initBlockChart(this.getBlocksPerHour(), '24h');
+    } else if (this.selectedBlocksRange === 'week') {
+      this.initBlockChart(this.getBlocksPerDay(7), 'week');
+    } else if (this.selectedBlocksRange === 'month') {
+      this.initBlockChart(this.getBlocksPerDay(30), 'month');
+    } else if (this.selectedBlocksRange === 'all') {
+      this.initBlockChart(this.getBlocksAllTime(), 'all');
+    }
+  }
+
+  setTxRange(range: '24h' | 'week' | 'month' | 'all') {
+    this.selectedTxRange = range;
+
+    if (this.selectedTxRange === '24h') {
+      this.initTransactionChart(this.getTxPerHour(), '24h');
+    } else if (this.selectedTxRange === 'week') {
+      this.initTransactionChart(this.getTxPerDay(7), 'week');
+    } else if (this.selectedTxRange === 'month') {
+      this.initTransactionChart(this.getTxPerDay(30), 'month');
+    } else if (this.selectedTxRange === 'all') {
+      this.initTransactionChart(this.getTxAllTime(), 'all');
+    }
   }
 
   // ViewChild references for the chart canvases
@@ -177,20 +212,15 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Block Chart
-  initBlockChart() {
-    if (!this.blockChartRef || !this.blockChartRef.nativeElement) {
-      console.error('Block Chart Canvas not found or not ready.');
-      return;
-    }
-    // Update current theme state
-    this.isDarkMode = document.documentElement.classList.contains('dark');
-
-    const aggregatedData = this.getAggregatedBlocksPerHour();
+  initBlockChart(data?: { x: Date; y: number }[], range: '24h' | 'week' | 'month' | 'all' = '24h') {
+    if (!this.blockChartRef?.nativeElement) return;
 
     const ctx = this.blockChartRef.nativeElement;
-    ctx.style.width = '100%';
-    ctx.style.height = '100%';
     Chart.getChart(ctx)?.destroy();
+
+    const Data = data || this.getBlocksPerHour();
+    const isAllTime = this.selectedBlocksRange === 'all';
+    const isDaily = this.selectedBlocksRange === 'week' || this.selectedBlocksRange === 'month';
 
     const gradientblockFill = ctx.getContext('2d')!.createLinearGradient(0, 0, 0, 400);
     gradientblockFill.addColorStop(0, '#004491');
@@ -294,7 +324,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
         datasets: [
           {
             label: 'Blocks',
-            data: aggregatedData,
+            data: Data,
             backgroundColor: gradientblockFill,
             tension: 0.1,
             borderWidth: 0,
@@ -318,16 +348,31 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              title: function (tooltipItems: any) {
-                if (tooltipItems.length > 0) {
-                  const date = tooltipItems[0].parsed.x;
+              title: (tooltipItems: any) => {
+                if (!tooltipItems.length) return '';
+
+                const date = tooltipItems[0].parsed.x;
+
+                if (this.selectedBlocksRange === '24h') {
                   return new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false,
                   }).format(date);
                 }
-                return '';
+
+                if (this.selectedBlocksRange === 'week' || this.selectedBlocksRange === 'month') {
+                  return new Intl.DateTimeFormat('en-US', {
+                    day: '2-digit',
+                    month: 'short',
+                  }).format(date);
+                }
+
+                return new Intl.DateTimeFormat('en-US', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                }).format(date);
               },
               label: function (context: any) {
                 let label = context.dataset.label || '';
@@ -350,9 +395,18 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
             display: true,
             type: 'time',
             time: {
-              unit: 'hour',
+              unit:
+                this.selectedBlocksRange === 'all'
+                  ? 'month'
+                  : this.selectedBlocksRange === 'month'
+                    ? 'day'
+                    : this.selectedBlocksRange === 'week'
+                      ? 'day'
+                      : 'hour',
               displayFormats: {
                 hour: 'HH:mm',
+                day: 'dd MMM',
+                year: 'MMM yyyy',
               },
             },
             border: {
@@ -362,8 +416,16 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
               display: false,
             },
             ticks: {
+              autoSkip: false,
               padding: 0,
-              stepSize: 4,
+              stepSize:
+                this.selectedBlocksRange === 'all'
+                  ? 1
+                  : this.selectedBlocksRange === 'month'
+                    ? 3
+                    : this.selectedBlocksRange === 'week'
+                      ? 1
+                      : 4,
               source: 'auto',
               major: {
                 enabled: true,
@@ -404,13 +466,18 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Transactions Chart
-  initTransactionChart() {
+  initTransactionChart(
+    data?: { x: Date; y: number }[],
+    range: '24h' | 'week' | 'month' | 'all' = '24h',
+  ) {
     if (!this.txChartRef || !this.txChartRef.nativeElement) {
       console.error('Transaction Chart Canvas not found or not ready.');
       return;
     }
 
-    const aggregatedData = this.getAggregatedTxPerHour();
+    const Data = data || this.getTxPerHour();
+    const isAllTime = this.selectedTxRange === 'all';
+    const isDaily = this.selectedTxRange === 'week' || this.selectedTxRange === 'month';
 
     const ctx = this.txChartRef.nativeElement;
     ctx.style.width = '100%';
@@ -514,113 +581,109 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.txChart = new Chart(ctx, {
-      type: 'line',
+      type: 'bar',
       data: {
         datasets: [
           {
             label: 'Transactions',
-            data: aggregatedData,
+            data: Data,
             backgroundColor: gradienttxFill,
-            tension: 0.1,
             borderWidth: 0,
-            pointRadius: 0,
-            pointHitRadius: 10,
-            fill: 'origin',
-            spanGaps: false,
           },
         ],
       },
       plugins: [backgroundFill],
       options: {
-        layout: {
-          padding: {
-            right: 24,
-          },
-        },
+        layout: { padding: { right: 24 } },
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              title: function (tooltipItems: any) {
-                if (tooltipItems.length > 0) {
-                  const date = tooltipItems[0].parsed.x;
+              title: (tooltipItems: any) => {
+                if (!tooltipItems.length) return '';
+
+                const date = tooltipItems[0].parsed.x;
+
+                if (this.selectedTxRange === '24h') {
                   return new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false,
                   }).format(date);
                 }
-                return '';
+
+                if (this.selectedTxRange === 'week' || this.selectedTxRange === 'month') {
+                  return new Intl.DateTimeFormat('en-US', {
+                    day: '2-digit',
+                    month: 'short',
+                  }).format(date);
+                }
+
+                return new Intl.DateTimeFormat('en-US', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                }).format(date);
               },
               label: function (context: any) {
                 let label = context.dataset.label || '';
-                if (label) {
-                  label += ': ';
-                }
-                if (context.parsed.y !== null) {
-                  label += context.parsed.y;
-                }
+                if (label) label += ': ';
+                if (context.parsed.y !== null) label += context.parsed.y;
                 return label;
               },
             },
           },
         },
-        interaction: {
-          intersect: false,
-        },
+        interaction: { intersect: false },
         scales: {
           x: {
             display: true,
             type: 'time',
             time: {
-              unit: 'hour',
+              unit:
+                this.selectedTxRange === 'all'
+                  ? 'month'
+                  : this.selectedTxRange === 'month'
+                    ? 'day'
+                    : this.selectedTxRange === 'week'
+                      ? 'day'
+                      : 'hour',
               displayFormats: {
                 hour: 'HH:mm',
+                day: 'dd MMM',
+                year: 'MMM yyyy',
               },
             },
-            border: {
-              width: 0,
-            },
-            grid: {
-              display: false,
-            },
+            border: { width: 0 },
+            grid: { display: false },
             ticks: {
               padding: 0,
-              stepSize: 4,
+              stepSize:
+                this.selectedTxRange === 'all'
+                  ? 1
+                  : this.selectedTxRange === 'month'
+                    ? 3
+                    : this.selectedTxRange === 'week'
+                      ? 1
+                      : 4,
               source: 'auto',
-              major: {
-                enabled: true,
-              },
-              font: {
-                family: 'Poppins, sans-serif',
-                weight: 'bolder',
-                size: 12,
-              },
+              major: { enabled: true },
+              font: { family: 'Poppins, sans-serif', weight: 'bolder', size: 12 },
             },
           },
           y: {
             display: true,
             min: 0,
             suggestedMax: 10,
-            border: {
-              width: 0,
-            },
-            grid: {
-              display: false,
-            },
+            border: { width: 0 },
+            grid: { display: false },
             ticks: {
               padding: 0,
               source: 'auto',
-              font: {
-                family: 'Poppins, sans-serif',
-                weight: 'bolder',
-                size: 12,
-              },
-              callback: function (value: any) {
-                return value === 0 ? '' : value;
-              },
+              font: { family: 'Poppins, sans-serif', weight: 'bolder', size: 12 },
+              callback: (value: any) => (value === 0 ? '' : value),
             },
           },
         },
@@ -628,8 +691,8 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Block and Transaction aggregation methods
-  getAggregatedBlocksPerHour() {
+  // Block and Transaction data methods
+  getBlocksPerHour() {
     const now = Date.now();
     const hour = 60 * 60 * 1000;
 
@@ -661,6 +724,21 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    /* 🔥 ADD 30 FAKE ENTRIES HERE */
+    /*for (let i = 1; i <= 50; i++) {
+      const fakeHour = new Date(now - (24 + i) * hour);
+      fakeHour.setMinutes(0, 0, 0);
+
+      const fakeKey = fakeHour.getTime();
+
+      if (!hourlyBins[fakeKey]) {
+        hourlyBins[fakeKey] = {
+          blockCount: Math.floor(Math.random() * 15) + 1, // fake block blockCount
+          latestTs: fakeKey,
+        };
+      }
+    }*/
+
     return Object.keys(hourlyBins)
       .sort((a, b) => Number(a) - Number(b))
       .map((timestampStr) => {
@@ -669,7 +747,115 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  getAggregatedTxPerHour() {
+  getBlocksPerWeek() {
+    const now = Date.now();
+    const hour = 60 * 60 * 1000;
+    const weekMs = 7 * 24 * hour;
+
+    const hourlyBins: { [key: number]: number } = {};
+
+    // Initialize 7*24 hourly bins
+    for (let i = 7 * 24; i >= 0; i--) {
+      const date = new Date(now - i * hour);
+      date.setMinutes(0, 0, 0);
+      hourlyBins[date.getTime()] = 0;
+    }
+
+    this.blockList.forEach((block) => {
+      const ts = new Date(block.timestamp).getTime();
+      if (ts >= now - weekMs && ts <= now) {
+        const date = new Date(ts);
+        date.setMinutes(0, 0, 0);
+        const key = date.getTime();
+        if (hourlyBins[key] !== undefined) {
+          hourlyBins[key]++;
+        }
+      }
+    });
+
+    return Object.keys(hourlyBins)
+      .sort((a, b) => Number(a) - Number(b))
+      .map((ts) => ({ x: new Date(Number(ts)), y: hourlyBins[Number(ts)] }));
+  }
+
+  getBlocksPerDay(days: number) {
+    const now = Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+
+    const dailyBins: { [key: number]: number } = {};
+
+    for (let i = days; i >= 0; i--) {
+      const date = new Date(now - i * dayMs);
+      date.setHours(0, 0, 0, 0);
+
+      dailyBins[date.getTime()] = 0;
+    }
+
+    this.blockList.forEach((block) => {
+      const ts = new Date(block.timestamp).getTime();
+
+      if (ts >= now - days * dayMs && ts <= now) {
+        const d = new Date(ts);
+        d.setHours(0, 0, 0, 0);
+
+        const key = d.getTime();
+
+        if (dailyBins[key] !== undefined) {
+          dailyBins[key]++;
+        }
+      }
+    });
+
+    return Object.keys(dailyBins)
+      .sort((a, b) => Number(a) - Number(b))
+      .map((ts) => ({
+        x: new Date(Number(ts)),
+        y: dailyBins[Number(ts)],
+      }));
+  }
+
+  getBlocksAllTime() {
+    const dailyBins: { [key: string]: { blockCount: number } } = {};
+
+    this.blockList.forEach((block) => {
+      const timestamp = block.timestamp?.seconds ? block.timestamp.seconds * 1000 : block.timestamp;
+
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return;
+
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const day = date.getDate();
+
+      const key = `${year}-${month}-${day}`;
+
+      if (!dailyBins[key]) {
+        dailyBins[key] = { blockCount: 0 };
+      }
+
+      dailyBins[key].blockCount++;
+    });
+
+    return Object.keys(dailyBins)
+      .sort((a, b) => {
+        const [yA, mA, dA] = a.split('-').map(Number);
+        const [yB, mB, dB] = b.split('-').map(Number);
+
+        if (yA !== yB) return yA - yB;
+        if (mA !== mB) return mA - mB;
+        return dA - dB;
+      })
+      .map((key) => {
+        const [year, month, day] = key.split('-').map(Number);
+
+        return {
+          x: new Date(year, month, day),
+          y: dailyBins[key].blockCount,
+        };
+      });
+  }
+
+  getTxPerHour() {
     const now = Date.now();
     const hour = 60 * 60 * 1000;
 
@@ -697,11 +883,102 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    /* 🔥 ADD 30 FAKE ENTRIES HERE */
+    /*for (let i = 1; i <= 50; i++) {
+      const fakeHour = new Date(now - (24 + i) * hour);
+      fakeHour.setMinutes(0, 0, 0);
+
+      const fakeKey = fakeHour.getTime();
+
+      if (!hourlyBins[fakeKey]) {
+        hourlyBins[fakeKey] = {
+          txCount: Math.floor(Math.random() * 15) + 1, // fake transaction
+          latestTs: fakeKey,
+        };
+      }
+    }*/
+
     return Object.keys(hourlyBins)
       .sort((a, b) => Number(a) - Number(b))
       .map((timestampStr) => {
         const hourBin = hourlyBins[Number(timestampStr)];
         return { x: new Date(hourBin.latestTs), y: hourBin.txCount };
+      });
+  }
+
+  getTxPerDay(days: number = 30) {
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+
+    const dailyBins: { [key: number]: { txCount: number; latestTs: number } } = {};
+
+    for (let i = days; i >= 0; i--) {
+      const date = new Date(now - i * day);
+      date.setHours(0, 0, 0, 0);
+
+      dailyBins[date.getTime()] = {
+        txCount: 0,
+        latestTs: date.getTime(),
+      };
+    }
+
+    this.blockList.forEach((block) => {
+      const blockTs = new Date(block.timestamp).getTime();
+
+      if (blockTs >= now - days * day && blockTs <= now) {
+        const blockDate = new Date(blockTs);
+        blockDate.setHours(0, 0, 0, 0);
+
+        const key = blockDate.getTime();
+
+        if (dailyBins[key]) {
+          dailyBins[key].txCount += block.txCount;
+
+          if (blockTs > dailyBins[key].latestTs) {
+            dailyBins[key].latestTs = blockTs;
+          }
+        }
+      }
+    });
+
+    return Object.keys(dailyBins)
+      .sort((a, b) => Number(a) - Number(b))
+      .map((ts) => {
+        const bin = dailyBins[Number(ts)];
+        return { x: new Date(bin.latestTs), y: bin.txCount };
+      });
+  }
+
+  getTxAllTime() {
+    const dailyBins: { [key: number]: { txCount: number; latestTs: number } } = {};
+
+    this.blockList.forEach((block) => {
+      const blockTs = new Date(block.timestamp).getTime();
+
+      const blockDate = new Date(blockTs);
+      blockDate.setHours(0, 0, 0, 0);
+
+      const key = blockDate.getTime();
+
+      if (!dailyBins[key]) {
+        dailyBins[key] = {
+          txCount: 0,
+          latestTs: blockTs,
+        };
+      }
+
+      dailyBins[key].txCount += block.txCount;
+
+      if (blockTs > dailyBins[key].latestTs) {
+        dailyBins[key].latestTs = blockTs;
+      }
+    });
+
+    return Object.keys(dailyBins)
+      .sort((a, b) => Number(a) - Number(b))
+      .map((ts) => {
+        const bin = dailyBins[Number(ts)];
+        return { x: new Date(bin.latestTs), y: bin.txCount };
       });
   }
 }

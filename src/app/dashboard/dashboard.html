@@ -62,7 +62,85 @@
     <div
       class="p-2 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
     >
-      <div class="font-medium text-center shrink-0">Blocks in the last 24 hours</div>
+      <div class="flex flex-row gap-4 justify-center">
+        <div class="font-medium text-center shrink-0">Blocks:</div>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedBlocksRange === '24h'"
+          (click)="setBlocksRange('24h')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            Last 24 Hours
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedBlocksRange === 'week'"
+          (click)="setBlocksRange('week')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            Last Week
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedBlocksRange === 'month'"
+          (click)="setBlocksRange('month')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            Last Month
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedBlocksRange === 'all'"
+          (click)="setBlocksRange('all')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            All Time
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+      </div>
       <div *ngIf="isLoading" class="text-center font-medium py-20">
         <!-- Loading -->
         <div
@@ -191,7 +269,85 @@
     <div
       class="p-2 flex flex-col overflow-hidden h-[282px] 2xl:h-[452px] text-sm 2xl:text-base bg-[#e0e4e7] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:bg-[#24272C] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] rounded-[25px]"
     >
-      <div class="font-medium text-center shrink-0">Transactions in the last 24 hours</div>
+      <div class="flex flex-row gap-4 justify-center">
+        <div class="font-medium text-center shrink-0">Transactions:</div>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedTxRange === '24h'"
+          (click)="setTxRange('24h')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            Last 24 Hours
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedTxRange === 'week'"
+          (click)="setTxRange('week')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            Last Week
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedTxRange === 'month'"
+          (click)="setTxRange('month')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            Last Month
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+        <button
+          class="relative cursor-pointer px-2 bg-[#e0e4e7] dark:bg-[#24272C] rounded-full transition-all duration-300 ease-in-out group"
+          [class.active]="selectedTxRange === 'all'"
+          (click)="setTxRange('all')"
+        >
+          <span
+            class="inline-block transform transition-transform duration-300 ease-in-out group-hover:scale-95"
+          >
+            All Time
+          </span>
+          <!-- Normal Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[3px_3px_6px_#c8c8c8,-3px_-3px_6px_#ffffff] dark:shadow-[3px_3px_6px_#0000004d,-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out group-hover:opacity-0 group-[.active]:opacity-0"
+          ></span>
+          <!-- Inset Shadow -->
+          <span
+            class="absolute inset-0 rounded-[10px] shadow-[inset_3px_3px_6px_#c8c8c8,inset_-3px_-3px_6px_#ffffff] dark:shadow-[inset_3px_3px_6px_#0000004d,inset_-3px_-3px_6px_#ffffff14] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-[.active]:opacity-100"
+          ></span>
+        </button>
+      </div>
       <div *ngIf="isLoading" class="text-center font-medium py-20">
         <!-- Loading -->
         <div

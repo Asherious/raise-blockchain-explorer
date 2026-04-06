@@ -14,7 +14,11 @@ export const routes: Routes = [
     component: Blocks,
   },
   {
-    path: 'blocks/:blockNumber',
+    path: 'block/:blockNumber',
+    component: BlockDetails,
+  },
+  {
+    path: 'address/:hash',
     component: BlockDetails,
   },
   {

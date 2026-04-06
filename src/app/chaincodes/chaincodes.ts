@@ -1,0 +1,42 @@
+import { Component, inject, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environment/environment';
+
+@Component({
+  selector: 'app-chaincodes',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './chaincodes.html',
+  styleUrls: ['./chaincodes.css'],
+})
+export class CHAINCODES implements OnInit {
+  private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
+
+  @ViewChild('balanceChartCanvas')
+  balanceChartRef!: ElementRef<HTMLCanvasElement>;
+
+  error: string | null = null;
+  chaincodeList: any[] = [];
+
+  ngOnInit(): void {
+    this.fetchChaincodeData();
+  }
+
+  fetchChaincodeData(): void {
+    this.http.get<any[]>(`${environment.apiURL}/chaincodes`).subscribe({
+      next: (data) => {
+        this.chaincodeList = data;
+        this.error = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = 'Failed to fetch chaincode data';
+        console.error(err);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+}
