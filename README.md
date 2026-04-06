@@ -7,7 +7,7 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
   1.	Install [Visual Studio Code](https://code.visualstudio.com)
   2.	Clone this repo
-  3.	On Visual Studio Code, open a new Terminal and run: npm install
-  4.	On Visual Studio Code, run: ng serve
+  3.	On Visual Studio Code, open a new Terminal and run: `npm install`
+  4.	On Visual Studio Code, run: `ng serve`
 
 Now, you can open your browser and navigate to http://localhost:4200
