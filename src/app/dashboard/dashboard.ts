@@ -581,14 +581,20 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.txChart = new Chart(ctx, {
-      type: 'bar',
+      type: 'line',
       data: {
         datasets: [
           {
             label: 'Transactions',
             data: Data,
             backgroundColor: gradienttxFill,
+            tension: 0.1,
             borderWidth: 0,
+            borderColor: gradienttxFill,
+            pointRadius: 0,
+            pointHitRadius: 10,
+            fill: 'origin',
+            spanGaps: false,
           },
         ],
       },
@@ -906,7 +912,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  getTxPerDay(days: number = 30) {
+  getTxPerDay(days: number) {
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
 
@@ -945,7 +951,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       .sort((a, b) => Number(a) - Number(b))
       .map((ts) => {
         const bin = dailyBins[Number(ts)];
-        return { x: new Date(bin.latestTs), y: bin.txCount };
+        return { x: new Date(Number(ts)), y: bin.txCount };
       });
   }
 
